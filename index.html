@@ -26,7 +26,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
         .modal-blur { backdrop-filter: blur(4px); }
         .bed-cell {
-            background-color: #ffffff; min-height: 72px; transition: background-color 0.15s ease; touch-action: none; 
+            background-color: #ffffff; min-height: 60px; transition: background-color 0.15s ease; touch-action: none; 
         }
         .bed-cell:active { transform: scale(0.98); }
         .drag-clone {
@@ -130,39 +130,39 @@
     <main class="flex-1 overflow-auto p-2 sm:p-4 bg-slate-200/80 flex flex-col relative" id="mainScrollArea">
         
         <!-- MAP VIEW -->
-        <div id="mapViewContainer" class="w-full mx-auto bg-white border border-slate-300 rounded-xl shadow-md p-4 flex flex-col min-w-[1000px] overflow-x-auto relative">
+        <div id="mapViewContainer" class="w-full mx-auto bg-white border border-slate-300 rounded-xl shadow-md p-2 sm:p-3 flex flex-col min-w-[1000px] overflow-x-auto relative">
             
             <!-- TOP ROOMS -->
-            <div id="topRoomsContainer" class="flex flex-row justify-center space-x-6 mb-6"></div>
+            <div id="topRoomsContainer" class="flex flex-row justify-center space-x-4 mb-3"></div>
 
             <!-- MIDDLE (Left + Station + Right) -->
             <div class="flex flex-row items-stretch justify-between">
                 <!-- LEFT ROOMS -->
-                <div id="leftRoomsContainer" class="flex flex-col space-y-6 w-[200px] flex-shrink-0 justify-center"></div>
+                <div id="leftRoomsContainer" class="flex flex-col space-y-3 w-[200px] flex-shrink-0 justify-center"></div>
 
                 <!-- CENTER STATION -->
-                <div class="flex-1 mx-8 flex flex-col items-center justify-center relative min-w-[500px]">
-                    <div class="w-full h-full border-2 border-dashed border-slate-300 bg-slate-50 rounded-3xl p-6 flex flex-col items-center shadow-inner relative">
+                <div class="flex-1 mx-4 sm:mx-6 flex flex-col items-center justify-center relative min-w-[500px]">
+                    <div class="w-full h-full border-2 border-dashed border-slate-300 bg-slate-50 rounded-3xl p-3 sm:p-4 flex flex-col items-center shadow-inner relative">
                         <div class="absolute -top-3 bg-slate-700 text-white px-4 py-1 rounded-full text-xs font-black shadow-sm flex items-center space-x-1.5">
                             <i class="fa-solid fa-user-nurse"></i>
                             <span>中央ステーション (受持看護師)</span>
                         </div>
                         
-                        <div id="centerNurseGrid" class="w-full flex flex-col items-center mt-2 space-y-6">
+                        <div id="centerNurseGrid" class="w-full flex flex-col items-center mt-2 space-y-3">
                             <!-- Chief Row -->
-                            <div id="chiefRow" class="flex flex-row justify-center space-x-4 w-full"></div>
+                            <div id="chiefRow" class="flex flex-row justify-center space-x-3 w-full"></div>
                             <!-- Teams Row -->
-                            <div id="teamsRow" class="flex flex-col space-y-4 w-full items-center"></div>
+                            <div id="teamsRow" class="flex flex-col space-y-2.5 w-full items-center"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- RIGHT ROOMS -->
-                <div id="rightRoomsContainer" class="flex flex-col space-y-6 w-[200px] flex-shrink-0 justify-center"></div>
+                <div id="rightRoomsContainer" class="flex flex-col space-y-3 w-[200px] flex-shrink-0 justify-center"></div>
             </div>
 
             <!-- BOTTOM ROOMS -->
-            <div id="bottomRoomsContainer" class="flex flex-row justify-center space-x-6 mt-6"></div>
+            <div id="bottomRoomsContainer" class="flex flex-row justify-center space-x-4 mt-3"></div>
         </div>
 
         <!-- LIST VIEW -->
@@ -361,15 +361,25 @@
             <div class="p-4 overflow-y-auto flex-1 space-y-4">
                 <div class="flex justify-between items-center pb-2 border-b">
                     <span class="text-xs font-bold text-slate-700">出勤スタッフ一覧</span>
-                    <button onclick="addNewStaff()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm">
-                        <i class="fa-solid fa-user-plus mr-1"></i>スタッフを追加
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="exportStaffCsv()" class="px-3 py-1.5 bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
+                            <i class="fa-solid fa-download mr-1"></i>CSV出力
+                        </button>
+                        <label class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition cursor-pointer">
+                            <i class="fa-solid fa-upload mr-1"></i>CSV読込
+                            <input type="file" onchange="importStaffCsv(event)" accept=".csv" class="hidden">
+                        </label>
+                        <button onclick="addNewStaff()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm">
+                            <i class="fa-solid fa-user-plus mr-1"></i>スタッフを追加
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs whitespace-nowrap min-w-[800px]">
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 border-b">
                                 <th class="p-2">スタッフ名</th>
+                                <th class="p-2 text-center">出勤</th>
                                 <th class="p-2">チームカラー</th>
                                 <th class="p-2 text-rose-600">個人カラー</th>
                                 <th class="p-2">役割</th>
@@ -536,13 +546,13 @@
         ];
 
         let nurses = [
-            { id: 'N1', name: 'チーフ', team: 'none', role: 'chief', canAdmit: false, capacity: 'low', personalColor: 'slate' },
-            { id: 'N2', name: '受持A (L)', team: 'blue', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'blue' },
-            { id: 'N3', name: '受持B', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'teal' },
-            { id: 'N7', name: '受持C', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'cyan' },
-            { id: 'N4', name: '受持D (L)', team: 'green', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'green' },
-            { id: 'N5', name: '受持E', team: 'green', role: 'staff', canAdmit: false, capacity: 'low', personalColor: 'lime' },
-            { id: 'N6', name: '受持F', team: 'green', role: 'staff', canAdmit: true, capacity: 'high', personalColor: 'orange' }
+            { id: 'N1', name: 'チーフ', team: 'none', role: 'chief', canAdmit: false, capacity: 'low', personalColor: 'slate', isWorking: true },
+            { id: 'N2', name: '受持A (L)', team: 'blue', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'blue', isWorking: true },
+            { id: 'N3', name: '受持B', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'teal', isWorking: true },
+            { id: 'N7', name: '受持C', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'cyan', isWorking: true },
+            { id: 'N4', name: '受持D (L)', team: 'green', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'green', isWorking: true },
+            { id: 'N5', name: '受持E', team: 'green', role: 'staff', canAdmit: false, capacity: 'low', personalColor: 'lime', isWorking: true },
+            { id: 'N6', name: '受持F', team: 'green', role: 'staff', canAdmit: true, capacity: 'high', personalColor: 'orange', isWorking: true }
         ];
 
         let patients = [
@@ -755,18 +765,22 @@
                     const nurse = nurses.find(n => n.id === p.nurseId);
                     const pDef = nurse ? (PERSONAL_COLORS.find(c => c.id === nurse.personalColor) || PERSONAL_COLORS[0]) : null;
                     const bg = 'bg-white';
-                    let nb = nurse ? `<span class="px-1.5 py-0.5 rounded ${pDef.bg} ${pDef.text} text-[10px] font-black shadow-sm truncate max-w-[65px]">${nurse.name.split(' ')[0]}</span>` : `<span class="text-[9px] font-bold text-rose-500 border border-rose-300 bg-rose-50 px-1 rounded">未</span>`;
+                    
+                    const circle = nurse 
+                        ? `<div class="w-3.5 h-3.5 rounded-full ${pDef.bg} border border-black/10 shadow-sm shrink-0" title="${nurse.name}"></div>`
+                        : `<div class="w-3.5 h-3.5 rounded-full bg-rose-100 border border-rose-400 flex items-center justify-center shadow-sm shrink-0" title="未割当"><span class="text-[8px] text-rose-600 font-black scale-75">未</span></div>`;
+                    
                     const pt = calcPoints(p.state);
                     const ptClass = pt >= 8 ? 'bg-rose-500' : (pt >= 4 ? 'bg-amber-500' : 'bg-emerald-600');
 
                     bedsHtml += `
                         <div data-room="${room.roomNumber}" data-bed="${i}" onpointerdown="onBedPointerDown(event, '${room.roomNumber}', ${i}, '${p.id}')" onpointermove="onBedPointerMove(event)" onpointerup="onBedPointerUp(event)"
-                             class="bed-cell p-2 flex flex-col justify-between cursor-pointer ${bg} hover:brightness-95 relative border border-slate-300">
-                            <div class="flex items-start justify-between">
-                                <span class="font-extrabold text-xs text-slate-900 leading-tight truncate mr-1">${p.name}</span>
-                                ${nb}
+                             class="bed-cell p-1.5 flex flex-col justify-between cursor-pointer ${bg} hover:brightness-95 relative border border-slate-300">
+                            <div class="flex items-center space-x-1.5 overflow-hidden">
+                                ${circle}
+                                <span class="font-extrabold text-xs text-slate-900 leading-tight truncate">${p.name}</span>
                             </div>
-                            <div class="flex items-center justify-end mt-2">
+                            <div class="flex items-center justify-end mt-1">
                                 <span class="text-[10px] font-black px-1.5 py-0.5 rounded text-white shadow-sm ${ptClass}">${pt}pt</span>
                             </div>
                         </div>`;
@@ -810,6 +824,8 @@
             chiefRow.innerHTML = '';
             teamsRow.innerHTML = '';
 
+            const workingNurses = nurses.filter(n => n.isWorking !== false);
+
             const createNurseCard = (nurse) => {
                 const assigned = patients.filter(p => p.nurseId === nurse.id);
                 const score = assigned.reduce((sum, p) => sum + calcPoints(p.state), 0);
@@ -825,14 +841,12 @@
 
                 return `
                     <div onclick="toggleStaffPaint('${nurse.id}')" 
-                         class="p-2 rounded-xl border-2 cursor-pointer transition active:scale-95 flex flex-col items-center w-[90px] sm:w-[100px] bg-white relative
+                         class="p-1.5 sm:p-2 rounded-xl border-2 cursor-pointer transition active:scale-95 flex flex-col items-center w-[100px] sm:w-[110px] bg-white relative
                          ${active ? `ring-4 ring-slate-900 ${tDef.border}` : `border-slate-300 hover:border-slate-400 shadow-sm`}">
                         ${roleBadge}
-                        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full ${pDef.bg} ${pDef.text} flex items-center justify-center font-black mb-1.5 shadow-sm text-xs sm:text-sm border border-black/10">
-                            ${nurse.name.substring(0,3)}
-                        </div>
-                        <div class="flex items-center mb-1">
-                            <span class="text-[11px] sm:text-xs font-black text-slate-900 truncate max-w-[70px]">${nurse.name}</span>
+                        <div class="flex items-center space-x-1.5 mb-1.5">
+                            <div class="w-3.5 h-3.5 rounded-full ${pDef.bg} border border-black/10 shadow-sm shrink-0"></div>
+                            <span class="text-[11px] sm:text-xs font-black text-slate-900 truncate max-w-[65px]">${nurse.name}</span>
                             ${admitIcon}
                         </div>
                         <div class="w-full flex justify-between px-1.5 py-0.5 bg-slate-100 rounded text-[10px] items-center">
@@ -844,11 +858,11 @@
             };
 
             // 1. Chiefs Top
-            const chiefs = nurses.filter(n => n.role === 'chief');
+            const chiefs = workingNurses.filter(n => n.role === 'chief');
             chiefs.forEach(c => chiefRow.innerHTML += createNurseCard(c));
 
             // 2. Horizontal Team Layout
-            const others = nurses.filter(n => n.role !== 'chief');
+            const others = workingNurses.filter(n => n.role !== 'chief');
             const teamsMap = {};
             others.forEach(n => {
                 teamsMap[n.team] = teamsMap[n.team] || [];
@@ -866,9 +880,9 @@
                 const teamTitle = tDef.id !== 'none' ? `<div class="text-[11px] font-black ${tDef.text} ${tDef.bg} px-3 py-1 rounded-full shadow-sm mb-2 shrink-0">${tDef.label}</div>` : '';
 
                 let colHtml = `
-                    <div class="flex flex-col items-center bg-white p-3 rounded-2xl border border-slate-200 w-full shadow-sm">
+                    <div class="flex flex-col items-center bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 w-full shadow-sm">
                         ${teamTitle}
-                        <div class="flex flex-row justify-center items-start flex-wrap gap-3">
+                        <div class="flex flex-row justify-center items-start flex-wrap gap-2">
                 `;
                 teamNurses.forEach(n => { colHtml += createNurseCard(n); });
                 colHtml += `</div></div>`;
@@ -1133,10 +1147,12 @@
 
                 let roleSelect = `<select onchange="nurses[${i}].role=this.value" class="border border-slate-300 rounded p-1 text-xs w-full"><option value="staff" ${n.role === 'staff' ? 'selected' : ''}>スタッフ</option><option value="leader" ${n.role === 'leader' ? 'selected' : ''}>チームリーダー</option><option value="chief" ${n.role === 'chief' ? 'selected' : ''}>チーフ</option></select>`;
                 let admitCheck = `<input type="checkbox" onchange="nurses[${i}].canAdmit=this.checked" ${n.canAdmit ? 'checked' : ''} class="w-4 h-4 text-teal-600 rounded">`;
+                let workingCheck = `<input type="checkbox" onchange="toggleStaffWorking(${i}, this.checked)" ${n.isWorking !== false ? 'checked' : ''} class="w-4 h-4 text-teal-600 rounded">`;
                 let capSelect = `<select onchange="nurses[${i}].capacity=this.value" class="border border-slate-300 rounded p-1 text-xs w-full"><option value="low" ${n.capacity === 'low' ? 'selected' : ''}>低め</option><option value="normal" ${n.capacity === 'normal' ? 'selected' : ''}>通常</option><option value="high" ${n.capacity === 'high' ? 'selected' : ''}>高め</option></select>`;
                 
                 tbody.innerHTML += `<tr class="border-b bg-white hover:bg-slate-50">
                     <td class="p-2"><input type="text" value="${n.name}" onchange="nurses[${i}].name=this.value" class="w-24 border border-slate-300 rounded px-1.5 py-1 font-bold text-xs"></td>
+                    <td class="p-2 text-center">${workingCheck}</td>
                     <td class="p-2 w-32">${teamSelect}</td>
                     <td class="p-2 w-24">${colorSelect}</td>
                     <td class="p-2 w-28">${roleSelect}</td>
@@ -1146,7 +1162,17 @@
                 </tr>`;
             });
         }
-        function addNewStaff() { nurses.push({ id: 'N' + Date.now(), name: '新規', team: 'none', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'slate' }); renderStaffTable(); }
+        function addNewStaff() { nurses.push({ id: 'N' + Date.now(), name: '新規', team: 'none', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'slate', isWorking: true }); renderStaffTable(); }
+        
+        function toggleStaffWorking(idx, isWorking) {
+            nurses[idx].isWorking = isWorking;
+            if (!isWorking) {
+                const nId = nurses[idx].id;
+                patients.forEach(p => { if (p.nurseId === nId) p.nurseId = null; });
+                if (activePaintStaffId === nId) clearActivePaintStaff();
+            }
+        }
+
         function requestDelStaff(idx) {
             showCustomConfirm("削除しますか？担当患者は未割当になります。", () => {
                 const nId = nurses[idx].id; 
@@ -1157,7 +1183,74 @@
             });
         }
 
-        // === JSON EXPORT / IMPORT ===
+        // === JSON & CSV EXPORT / IMPORT ===
+        function exportStaffCsv() {
+            // Excelで文字化けしないようBOMを付与
+            let csv = '\uFEFFID,氏名,チーム,役割(chief/leader/staff),個人カラー,入院対応(true/false),負荷(low/normal/high),出勤(true/false)\r\n';
+            nurses.forEach(n => {
+                csv += `"${n.id}","${n.name}","${n.team}","${n.role}","${n.personalColor}",${n.canAdmit},"${n.capacity}",${n.isWorking !== false}\r\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `スタッフ一覧_${Date.now()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('スタッフCSVを出力しました');
+        }
+
+        function importStaffCsv(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const lines = e.target.result.split(/\r\n|\n/);
+                    let importedCount = 0;
+                    lines.forEach((line, idx) => {
+                        if (idx === 0 || !line.trim()) return; // ヘッダーと空行をスキップ
+                        
+                        // ダブルクォートを考慮してカンマ区切りをパース
+                        const cols = line.split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+                        if (cols.length >= 8) {
+                            const id = cols[0] || ('N' + Date.now() + Math.floor(Math.random() * 1000));
+                            const name = cols[1];
+                            const team = cols[2];
+                            const role = cols[3];
+                            const personalColor = cols[4];
+                            const canAdmit = cols[5] === 'true';
+                            const capacity = cols[6];
+                            const isWorking = cols[7] === 'true';
+
+                            const existingNurse = nurses.find(n => n.id === id);
+                            if (existingNurse) {
+                                // 既存のスタッフ情報を更新
+                                existingNurse.name = name;
+                                existingNurse.team = team;
+                                existingNurse.role = role;
+                                existingNurse.personalColor = personalColor;
+                                existingNurse.canAdmit = canAdmit;
+                                existingNurse.capacity = capacity;
+                                existingNurse.isWorking = isWorking;
+                            } else {
+                                // 新規スタッフとして追加
+                                nurses.push({ id, name, team, role, personalColor, canAdmit, capacity, isWorking });
+                            }
+                            importedCount++;
+                        }
+                    });
+                    renderStaffTable();
+                    renderAll();
+                    showToast(`${importedCount}件のスタッフデータを読み込みました`);
+                } catch (err) {
+                    showCustomAlert('CSVの読み込みに失敗しました。');
+                }
+                event.target.value = ''; // 連続で同じファイルを読み込めるようにリセット
+            };
+            reader.readAsText(file);
+        }
+
         function exportData() {
             const dataObj = { clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules };
             const dataStr = JSON.stringify(dataObj, null, 2);
@@ -1198,8 +1291,8 @@
         // === ALLOCATION ENGINE (WITH RULES) ===
         function triggerAutoAllocation() {
             patients.forEach(p => p.nurseId = null); // Reset
-            let allocatableNurses = nurses.filter(n => n.role !== 'chief'); // Exclude chief from auto allocation
-            if(allocatableNurses.length === 0) allocatableNurses = nurses;
+            let allocatableNurses = nurses.filter(n => n.role !== 'chief' && n.isWorking !== false); // Exclude chief and off-duty from auto allocation
+            if(allocatableNurses.length === 0) allocatableNurses = nurses.filter(n => n.isWorking !== false);
             
             let nWork = {}; 
             let nHeadcount = {};
