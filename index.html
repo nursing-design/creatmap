@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>病棟受持患者 自動配分システム (基本ルール・個人カラー版)</title>
+    <title>受持配分マップ　Ver.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -48,7 +48,7 @@
             </div>
             <div>
                 <div class="flex items-center space-x-2">
-                    <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">病棟フロアマップ受持配分</h1>
+                    <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">受持配分マップ　Ver.1</h1>
                 </div>
                 <p class="text-[11px] text-slate-500">外周病室 × 中央ステーション構成</p>
             </div>
@@ -65,6 +65,11 @@
 
         <div class="flex flex-wrap items-center gap-2">
             
+            <button onclick="openHelpModal()" class="px-3 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-2xs flex items-center space-x-1.5 active:scale-95 transition">
+                <i class="fa-solid fa-circle-question"></i>
+                <span class="hidden sm:inline">ヘルプ</span>
+            </button>
+
             <!-- Settings Hamburger Menu -->
             <div class="relative" id="settingsDropdownContainer">
                 <button onclick="toggleSettingsMenu()" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-2xs flex items-center space-x-2 active:scale-95 transition">
@@ -147,8 +152,15 @@
                             <i class="fa-solid fa-user-nurse"></i>
                             <span>中央ステーション (受持看護師)</span>
                         </div>
-                        
-                        <div id="centerNurseGrid" class="w-full flex flex-col items-center mt-2 space-y-3">
+                        <!-- NEW BUTTONS: Team Add Only -->
+                        <div class="absolute top-3 right-3 flex flex-col space-y-2 z-10">
+                            <button onclick="addNewTeam()" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md flex items-center space-x-1 text-[11px] font-bold transition active:scale-95" title="本日の稼働チームを追加">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                <span>チーム追加</span>
+                            </button>
+                        </div>
+
+                        <div id="centerNurseGrid" class="w-full flex flex-col items-center mt-3 space-y-2.5">
                             <!-- Chief Row -->
                             <div id="chiefRow" class="flex flex-row justify-center space-x-3 w-full"></div>
                             <!-- Teams Row -->
@@ -206,11 +218,24 @@
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <label class="block text-sm font-bold text-slate-800 mb-1">部屋割り当て戦略（部屋持ちルール）</label>
                     <p class="text-[11px] text-slate-500 mb-2">複数人部屋において、1人の看護師が複数の患者を受け持つことをどう扱うか設定します。</p>
-                    <select id="ruleRoomStrategy" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
-                        <option value="prevent">【部屋持ち禁止】 1部屋につき最大1名まで（リスク分散）</option>
+                    <select id="ruleRoomStrategy" onchange="toggleMaxPatientsPerRoomContainer()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                        <option value="prevent">【部屋持ち制限】 1部屋の最大受持人数を制限する（リスク分散）</option>
                         <option value="encourage">【部屋持ち推奨】 同じ部屋の患者を優先して割り当てる（動線短縮）</option>
                         <option value="neutral">特に考慮しない（負荷とチームのみで判断）</option>
                     </select>
+                    <div id="maxPatientsPerRoomContainer" class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">1部屋あたりの最大受持人数（同一スタッフ）:</span>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-xs text-slate-500">最大</span>
+                            <select id="ruleMaxPatientsPerRoom" class="border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-black bg-white text-fuchsia-900 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                                <option value="1">1名まで</option>
+                                <option value="2">2名まで</option>
+                                <option value="3">3名まで</option>
+                                <option value="4">4名まで</option>
+                                <option value="5">5名まで</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
@@ -348,6 +373,28 @@
         </div>
     </div>
 
+    <!-- Team Roster Modal -->
+    <div id="teamRosterModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-indigo-900 text-white p-4 flex items-center justify-between">
+                <h3 class="font-bold text-base" id="teamRosterModalTitle">チームメンバー選択</h3>
+                <button onclick="closeTeamRosterModal()" class="w-8 h-8 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 overflow-y-auto flex-1 bg-slate-50 space-y-4">
+                <div id="teamRosterList" class="space-y-2"></div>
+            </div>
+            <div class="p-3 border-t bg-white flex items-center justify-between">
+                <button id="btnDeleteActiveTeam" onclick="deleteActiveTeamFromModal()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs rounded-xl transition flex items-center">
+                    <i class="fa-solid fa-trash-can mr-1.5"></i>このチームを削除
+                </button>
+                <div class="flex space-x-2 ml-auto">
+                    <button onclick="closeTeamRosterModal()" class="px-4 py-2 text-slate-500 font-bold text-xs">キャンセル</button>
+                    <button id="btnSaveTeamRoster" onclick="saveTeamRoster()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition">決定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Staff Settings Modal -->
     <div id="staffSettingsModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
         <div class="bg-white rounded-2xl w-full max-w-6xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
@@ -381,8 +428,6 @@
                                 <th class="p-2">スタッフ名</th>
                                 <th class="p-2 text-center">出勤</th>
                                 <th class="p-2">チームカラー</th>
-                                <th class="p-2 text-rose-600">個人カラー</th>
-                                <th class="p-2">役割</th>
                                 <th class="p-2 text-center">入院対応</th>
                                 <th class="p-2">負荷上限</th>
                                 <th class="p-2 text-right">削除</th>
@@ -410,6 +455,60 @@
         </div>
     </div>
 
+    <!-- Help Modal -->
+    <div id="helpModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-800 text-white p-4 flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-base"><i class="fa-solid fa-circle-question text-sky-400 mr-2"></i>使用方法（ヘルプ）</h3>
+                </div>
+                <button onclick="closeHelpModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto flex-1 bg-slate-50 space-y-5 text-sm text-slate-700">
+                
+                <section>
+                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-map text-teal-600 mr-1.5"></i>マップ画面の基本操作</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-xs sm:text-sm">
+                        <li><strong>患者の登録:</strong> 「空床」をタップすると、新しい患者を登録できます。</li>
+                        <li><strong>担当の割り当て:</strong> 中央のスタッフアイコンをタップして「割当モード」にし、患者のベッドをタップすると担当に設定されます。</li>
+                        <li><strong>患者の移動:</strong> 患者のベッドをドラッグ＆ドロップすると、別のベッドへ移動（または入れ替え）できます。</li>
+                        <li><strong>患者情報の編集:</strong> スタッフが選択されていない状態で患者をタップすると、負荷点数や担当の解除、患者の削除ができます。</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>自動配分とルール設定</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-xs sm:text-sm">
+                        <li>右上の「自動配分」ボタンを押すと、現在の患者の負荷点数や基本ルールに基づいて、アルゴリズムが自動的に担当を割り当てます。</li>
+                        <li>「設定メニュー」＞「配分ルール設定」から、負荷優先か人数優先か、部屋持ちの制限などのルールを変更できます。</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-users-gear text-blue-600 mr-1.5"></i>チームとスタッフの管理</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-xs sm:text-sm">
+                        <li><strong>本日のメンバー:</strong> マップ中央の各チーム名（「Aチーム」など）をタップすると、その日出勤しているメンバーやリーダーを変更できます。</li>
+                        <li><strong>チームの追加:</strong> 中央ステーション右上の「＋チーム追加」ボタンから、その日の稼働チームを増やすことができます。</li>
+                        <li><strong>スタッフ情報:</strong> 「設定メニュー」＞「スタッフ設定」から、スタッフの追加・削除やベースとなる所属チーム、個人のカラー等を管理できます。</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-floppy-disk text-slate-600 mr-1.5"></i>データの保存と読み込み</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-xs sm:text-sm">
+                        <li>右上の「保存」ボタンを押すと、現在の状態がJSONファイルとしてダウンロードされます。</li>
+                        <li>「読込」ボタンから保存したJSONファイルを選択すると、前回の状態を復元できます。</li>
+                        <li>同じフォルダに <code>ward_allocation_data.json</code> を置いておくと、起動時に自動で読み込むか確認されます。</li>
+                    </ul>
+                </section>
+
+            </div>
+            <div class="p-3 border-t bg-white flex justify-end">
+                <button onclick="closeHelpModal()" class="px-5 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition">閉じる</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toastMessage" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 pointer-events-none transition-all duration-300 opacity-0 translate-y-4 z-50 flex items-center space-x-2">
         <i class="fa-solid fa-circle-check text-teal-400"></i>
@@ -430,6 +529,10 @@
                 closeSettingsMenu();
             }
         });
+
+        // === HELP LOGIC ===
+        function openHelpModal() { document.getElementById('helpModal').classList.remove('hidden'); }
+        function closeHelpModal() { document.getElementById('helpModal').classList.add('hidden'); }
 
         // === CUSTOM DIALOG SYSTEM ===
         let customDialogCallback = null;
@@ -493,12 +596,26 @@
         }
 
         // === DATA MODELS ===
-        const TEAM_COLORS = [
-            { id: 'none', label: '共用(カラー無)', bg: 'bg-slate-200', text: 'text-slate-800', border: 'border-slate-300', light: 'bg-slate-50' },
-            { id: 'blue', label: 'Aチーム (青)', bg: 'bg-blue-600', text: 'text-white', border: 'border-blue-600', light: 'bg-blue-50' },
-            { id: 'green', label: 'Bチーム (緑)', bg: 'bg-emerald-600', text: 'text-white', border: 'border-emerald-600', light: 'bg-emerald-50' },
-            { id: 'rose', label: 'Cチーム (赤)', bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-600', light: 'bg-rose-50' },
-            { id: 'amber', label: 'Dチーム (黄)', bg: 'bg-amber-500', text: 'text-amber-950', border: 'border-amber-500', light: 'bg-amber-50' }
+        const BASE_FOUR_TEAMS = [
+            { id: 'none', label: '共用(カラー無)', bg: 'bg-slate-200', text: 'text-slate-800', border: 'border-slate-300', light: 'bg-slate-50', dot: 'bg-slate-400' },
+            { id: 'blue', label: 'Aチーム (青)', bg: 'bg-blue-600', text: 'text-white', border: 'border-blue-600', light: 'bg-blue-50', dot: 'bg-blue-600' },
+            { id: 'green', label: 'Bチーム (緑)', bg: 'bg-emerald-600', text: 'text-white', border: 'border-emerald-600', light: 'bg-emerald-50', dot: 'bg-emerald-600' },
+            { id: 'rose', label: 'Cチーム (赤)', bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-600', light: 'bg-rose-50', dot: 'bg-rose-600' },
+            { id: 'amber', label: 'Dチーム (黄)', bg: 'bg-amber-500', text: 'text-amber-950', border: 'border-amber-500', light: 'bg-amber-50', dot: 'bg-amber-500' }
+        ];
+
+        // 本日マップに表示する稼働チーム一覧（初期はAチームとBチームを表示し、「＋チーム追加」でC, D等を追加可能）
+        let teams = [
+            BASE_FOUR_TEAMS[0], // none
+            BASE_FOUR_TEAMS[1], // blue (A)
+            BASE_FOUR_TEAMS[2]  // green (B)
+        ];
+
+        const TEAM_PRESETS = [
+            { id: 'rose', label: 'Cチーム (赤)', bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-600', light: 'bg-rose-50', dot: 'bg-rose-600' },
+            { id: 'amber', label: 'Dチーム (黄)', bg: 'bg-amber-500', text: 'text-amber-950', border: 'border-amber-500', light: 'bg-amber-50', dot: 'bg-amber-500' },
+            { id: 'purple', label: 'Eチーム (紫)', bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-600', light: 'bg-purple-50', dot: 'bg-purple-600' },
+            { id: 'cyan', label: 'Fチーム (水)', bg: 'bg-cyan-600', text: 'text-white', border: 'border-cyan-600', light: 'bg-cyan-50', dot: 'bg-cyan-600' }
         ];
 
         const PERSONAL_COLORS = [
@@ -520,13 +637,15 @@
             { id: 'surgery', title: '手術', icon: 'fa-scissors', options: [{ label: 'なし', points: 0 }, { label: '術前日', points: 2 }, { label: '術当日', points: 6 }, { label: '術後ケア', points: 4 }, { label: '直帰', points: 3 }] },
             { id: 'admission', title: '入退院', icon: 'fa-hospital-user', options: [{ label: 'なし', points: 0 }, { label: '入院あり', points: 4 }, { label: '退院あり', points: 2 }] },
             { id: 'transfer', title: '転棟', icon: 'fa-arrow-right-arrow-left', options: [{ label: 'なし', points: 0 }, { label: '受け', points: 3 }, { label: '出し', points: 3 }] },
-            { id: 'careLevel', title: 'ケア度', icon: 'fa-hand-holding-medical', options: [{ label: '低い', points: 1 }, { label: '高い', points: 4 }] },
-            { id: 'nurseCall', title: 'コール頻度', icon: 'fa-bell', options: [{ label: '通常', points: 1 }, { label: '多い', points: 4 }] }
+            { id: 'careLevel', title: 'ケア度', icon: 'fa-hand-holding-medical', options: [{ label: 'なし', points: 0 }, { label: '低い', points: 1 }, { label: '高い', points: 4 }] },
+            { id: 'nurseCall', title: 'コール頻度', icon: 'fa-bell', options: [{ label: 'なし', points: 0 }, { label: '通常', points: 1 }, { label: '多い', points: 4 }] },
+            { id: 'psychLoad', title: '心理的負荷', icon: 'fa-heart-crack', options: [{ label: 'なし', points: 0 }, { label: 'あり', points: 3 }] }
         ];
 
         let allocationRules = {
             balancePriority: 'workload', // 'workload' or 'headcount'
-            roomStrategy: 'neutral', // 'prevent' (部屋持ち禁止), 'encourage' (部屋持ち推奨), 'neutral'
+            roomStrategy: 'neutral', // 'prevent' (部屋持ち制限), 'encourage' (部屋持ち推奨), 'neutral'
+            maxPatientsPerRoom: 1, // 1部屋あたりの同一スタッフ最大受持人数
             teamPriority: 'normal', // 'high' or 'normal'
             sharedRoomHandling: 'standard', // 'standard' or 'low_workload'
             protectLowCap: true // true or false
@@ -546,13 +665,13 @@
         ];
 
         let nurses = [
-            { id: 'N1', name: 'チーフ', team: 'none', role: 'chief', canAdmit: false, capacity: 'low', personalColor: 'slate', isWorking: true },
-            { id: 'N2', name: '受持A (L)', team: 'blue', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'blue', isWorking: true },
-            { id: 'N3', name: '受持B', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'teal', isWorking: true },
-            { id: 'N7', name: '受持C', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'cyan', isWorking: true },
-            { id: 'N4', name: '受持D (L)', team: 'green', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'green', isWorking: true },
-            { id: 'N5', name: '受持E', team: 'green', role: 'staff', canAdmit: false, capacity: 'low', personalColor: 'lime', isWorking: true },
-            { id: 'N6', name: '受持F', team: 'green', role: 'staff', canAdmit: true, capacity: 'high', personalColor: 'orange', isWorking: true }
+            { id: 'N1', name: 'チーフ', baseTeam: 'blue', team: 'none', role: 'chief', canAdmit: false, capacity: 'low', personalColor: 'slate', isWorking: true },
+            { id: 'N2', name: '受持A', baseTeam: 'blue', team: 'blue', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'blue', isWorking: true },
+            { id: 'N3', name: '受持B', baseTeam: 'blue', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'teal', isWorking: true },
+            { id: 'N7', name: '受持C', baseTeam: 'rose', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'cyan', isWorking: true },
+            { id: 'N4', name: '受持D', baseTeam: 'green', team: 'green', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'green', isWorking: true },
+            { id: 'N5', name: '受持E', baseTeam: 'green', team: 'green', role: 'staff', canAdmit: false, capacity: 'low', personalColor: 'lime', isWorking: true },
+            { id: 'N6', name: '受持F', baseTeam: 'amber', team: 'green', role: 'staff', canAdmit: true, capacity: 'high', personalColor: 'orange', isWorking: true }
         ];
 
         let patients = [
@@ -570,14 +689,160 @@
 
         let dragState = { isDown: false, isDragging: false, startX: 0, startY: 0, patientId: null, sourceRoom: null, sourceBed: null, clone: null, el: null };
 
+        // === AUTO LOAD JSON STARTUP CHECK ===
+        const LOCAL_STORAGE_KEY = 'ward_allocator_autosave_v1';
+
+        function applyLoadedData(dataObj) {
+            if (dataObj.teams) teams = dataObj.teams;
+            if (dataObj.clinicalWorkloadItems) clinicalWorkloadItems = dataObj.clinicalWorkloadItems;
+            if (dataObj.wardRooms) wardRooms = dataObj.wardRooms;
+            if (dataObj.nurses) nurses = dataObj.nurses;
+            if (dataObj.patients) patients = dataObj.patients;
+            if (dataObj.allocationRules) allocationRules = dataObj.allocationRules;
+            updatePersonalColors();
+            renderAll();
+        }
+
+        function saveToLocalStorage() {
+            try {
+                const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, savedAt: new Date().toLocaleString('ja-JP') };
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataObj));
+            } catch (e) {
+                console.warn('LocalStorage save failed:', e);
+            }
+        }
+
+        function showStartupLoadDialog(options) {
+            const modal = document.getElementById('customDialogModal');
+            modal.classList.remove('hidden');
+            
+            const header = document.getElementById('customDialogHeader');
+            header.className = 'bg-teal-700 text-white p-3.5 font-bold text-sm flex items-center justify-between';
+            header.innerHTML = '<span><i class="fa-solid fa-folder-open mr-2"></i>起動時データの読み込み確認</span>';
+            
+            const msgEl = document.getElementById('customDialogMessage');
+            document.getElementById('customDialogInputContainer').classList.add('hidden');
+            const btns = document.getElementById('customDialogButtons');
+
+            if (options.type === 'json_file') {
+                msgEl.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="font-bold text-slate-800">同じフォルダ内に設定ファイル (<code class="bg-slate-100 px-1.5 py-0.5 rounded text-teal-700 font-mono text-xs">${options.fileName}</code>) が見つかりました。</p>
+                        <p class="text-xs text-slate-500">このJSONデータを自動で読み込んで開始しますか？</p>
+                    </div>
+                `;
+                btns.innerHTML = `
+                    <button onclick="closeCustomDialog()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">初期状態で開始</button>
+                    <button id="btnConfirmStartupJson" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center"><i class="fa-solid fa-check mr-1.5"></i>読み込む</button>
+                `;
+                document.getElementById('btnConfirmStartupJson').onclick = () => {
+                    closeCustomDialog();
+                    applyLoadedData(options.data);
+                    saveToLocalStorage();
+                    showToast(`${options.fileName} を読み込みました`);
+                };
+            } else if (options.type === 'local_storage') {
+                const savedTime = options.data.savedAt ? `（保存日時: ${options.data.savedAt}）` : '';
+                msgEl.innerHTML = `
+                    <div class="space-y-2.5">
+                        <p class="font-bold text-slate-800">前回の保存データ${savedTime}が見つかりました。自動で読み込んで復元しますか？</p>
+                        <p class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                            <i class="fa-solid fa-circle-info text-teal-600 mr-1"></i>ブラウザのセキュリティ制限（直接ファイルを開いた場合など）によりフォルダ内のJSONへ直接アクセスできない環境では、下のボタンから同じフォルダのJSONを選択して読み込むことも可能です。
+                        </p>
+                    </div>
+                `;
+                btns.innerHTML = `
+                    <div class="flex flex-wrap gap-2 w-full justify-end">
+                        <button onclick="closeCustomDialog()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">初期データで開始</button>
+                        <label class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer flex items-center">
+                            <i class="fa-solid fa-file-import mr-1.5"></i>JSONファイルを選択
+                            <input type="file" onchange="closeCustomDialog(); importData(event);" accept=".json" class="hidden">
+                        </label>
+                        <button id="btnConfirmStartupLs" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center">
+                            <i class="fa-solid fa-rotate-right mr-1.5"></i>前回データを復元
+                        </button>
+                    </div>
+                `;
+                document.getElementById('btnConfirmStartupLs').onclick = () => {
+                    closeCustomDialog();
+                    applyLoadedData(options.data);
+                    showToast('前回の保存データを復元しました');
+                };
+            } else {
+                msgEl.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="font-bold text-slate-800">保存されたJSONファイルを読み込んで開始しますか？</p>
+                        <p class="text-xs text-slate-500">同じフォルダに保存した <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-[11px]">ward_allocation_data.json</code> などのファイルを選択して読み込めます。</p>
+                    </div>
+                `;
+                btns.innerHTML = `
+                    <button onclick="closeCustomDialog()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">このまま開始 (初期値)</button>
+                    <label class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition cursor-pointer flex items-center">
+                        <i class="fa-solid fa-folder-open mr-1.5"></i>JSONファイルを選択して読込
+                        <input type="file" onchange="closeCustomDialog(); importData(event);" accept=".json" class="hidden">
+                    </label>
+                `;
+            }
+        }
+
+        async function checkAutoLoadJsonOnStartup() {
+            const candidateFiles = ['./ward_allocation_data.json', './data.json'];
+            for (const filePath of candidateFiles) {
+                try {
+                    const response = await fetch(filePath, { cache: 'no-store' });
+                    if (response.ok) {
+                        const dataObj = await response.json();
+                        if (dataObj && (dataObj.wardRooms || dataObj.nurses || dataObj.patients)) {
+                            const fileName = filePath.replace('./', '');
+                            showStartupLoadDialog({ type: 'json_file', fileName, data: dataObj });
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    // Fetch fails on file:// protocol due to browser CORS policy; proceed to fallback
+                }
+            }
+
+            // Fallback: Check LocalStorage backup or prompt user to pick local JSON
+            try {
+                const savedStr = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (savedStr) {
+                    const savedData = JSON.parse(savedStr);
+                    if (savedData && (savedData.wardRooms || savedData.nurses || savedData.patients)) {
+                        showStartupLoadDialog({ type: 'local_storage', data: savedData });
+                        return;
+                    }
+                }
+            } catch (e) {}
+
+            // If neither fetch nor LocalStorage succeeded, offer startup dialog to load JSON file
+            showStartupLoadDialog({ type: 'prompt_only' });
+        }
+
         // === ALLOCATION RULES UI ===
+        function toggleMaxPatientsPerRoomContainer() {
+            const strategy = document.getElementById('ruleRoomStrategy').value;
+            const container = document.getElementById('maxPatientsPerRoomContainer');
+            if (container) {
+                if (strategy === 'prevent') {
+                    container.classList.remove('hidden');
+                    container.classList.add('flex');
+                } else {
+                    container.classList.add('hidden');
+                    container.classList.remove('flex');
+                }
+            }
+        }
+
         function openRulesSettingsModal() {
             document.getElementById('ruleBalancePriority').value = allocationRules.balancePriority || 'workload';
             document.getElementById('ruleRoomStrategy').value = allocationRules.roomStrategy || 'neutral';
+            document.getElementById('ruleMaxPatientsPerRoom').value = allocationRules.maxPatientsPerRoom || 1;
             document.getElementById('ruleTeamPriority').value = allocationRules.teamPriority || 'normal';
             document.getElementById('ruleSharedRoom').value = allocationRules.sharedRoomHandling || 'standard';
             document.getElementById('ruleProtectLowCap').checked = allocationRules.protectLowCap !== false; // default true
             
+            toggleMaxPatientsPerRoomContainer();
             document.getElementById('rulesSettingsModal').classList.remove('hidden');
         }
 
@@ -588,10 +853,12 @@
         function saveRulesSettings() {
             allocationRules.balancePriority = document.getElementById('ruleBalancePriority').value;
             allocationRules.roomStrategy = document.getElementById('ruleRoomStrategy').value;
+            allocationRules.maxPatientsPerRoom = parseInt(document.getElementById('ruleMaxPatientsPerRoom').value) || 1;
             allocationRules.teamPriority = document.getElementById('ruleTeamPriority').value;
             allocationRules.sharedRoomHandling = document.getElementById('ruleSharedRoom').value;
             allocationRules.protectLowCap = document.getElementById('ruleProtectLowCap').checked;
 
+            saveToLocalStorage();
             closeRulesSettingsModal();
             showToast('配分ルールを保存しました');
         }
@@ -755,7 +1022,7 @@
             const div = document.createElement('div');
             div.className = "flex flex-col w-[160px] sm:w-[180px] flex-shrink-0";
             let gridCols = room.capacity === 1 ? 'grid-cols-1' : (room.capacity === 2 ? 'grid-cols-2' : 'grid-cols-2');
-            const teamDef = TEAM_COLORS.find(t => t.id === room.team) || TEAM_COLORS[0];
+            const teamDef = teams.find(t => t.id === room.team) || BASE_FOUR_TEAMS.find(t => t.id === room.team) || BASE_FOUR_TEAMS[0];
             const teamBadge = room.team === 'none' ? '' : `<span class="text-[9px] px-1.5 py-0.5 rounded ${teamDef.bg} ${teamDef.text} shadow-sm">${teamDef.label.split(' ')[0]}</span>`;
 
             let bedsHtml = '';
@@ -829,7 +1096,7 @@
             const createNurseCard = (nurse) => {
                 const assigned = patients.filter(p => p.nurseId === nurse.id);
                 const score = assigned.reduce((sum, p) => sum + calcPoints(p.state), 0);
-                const tDef = TEAM_COLORS.find(t => t.id === nurse.team) || TEAM_COLORS[0];
+                const tDef = teams.find(t => t.id === nurse.team) || teams[0];
                 const pDef = PERSONAL_COLORS.find(c => c.id === nurse.personalColor) || PERSONAL_COLORS[0];
                 const active = activePaintStaffId === nurse.id;
                 
@@ -853,38 +1120,51 @@
                             <span class="font-bold text-slate-600">${assigned.length}名</span>
                             <span class="font-black ${score > 15 ? 'text-rose-600' : 'text-slate-700'}">${score}pt</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             };
 
-            // 1. Chiefs Top
+            // 1. Chiefs Top (Always show frame so user can click to assign chief)
             const chiefs = workingNurses.filter(n => n.role === 'chief');
-            chiefs.forEach(c => chiefRow.innerHTML += createNurseCard(c));
+            let chiefHtml = `<div class="flex flex-col items-center bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 w-full shadow-sm relative">
+                <div onclick="openChiefRosterModal()" class="text-[11px] font-black text-slate-800 bg-slate-200 hover:bg-slate-300 px-4 py-1 rounded-full shadow-sm mb-2 cursor-pointer transition active:scale-95 flex items-center">
+                    <i class="fa-solid fa-crown text-amber-500 mr-1.5"></i>チーフ <i class="fa-solid fa-pen text-[9px] ml-1.5 opacity-70"></i>
+                </div>
+                <div class="flex flex-row justify-center items-start flex-wrap gap-2 w-full">`;
+            if (chiefs.length > 0) {
+                chiefs.forEach(c => { chiefHtml += createNurseCard(c); });
+            } else {
+                chiefHtml += `<span onclick="openChiefRosterModal()" class="text-[11px] text-slate-400 py-1 cursor-pointer hover:text-slate-600">タップして本日のチーフを選択</span>`;
+            }
+            chiefHtml += `</div></div>`;
+            chiefRow.innerHTML = chiefHtml;
 
-            // 2. Horizontal Team Layout
+            // 2. Horizontal Team Layout (Always show active teams on map even if 0 members)
             const others = workingNurses.filter(n => n.role !== 'chief');
-            const teamsMap = {};
-            others.forEach(n => {
-                teamsMap[n.team] = teamsMap[n.team] || [];
-                teamsMap[n.team].push(n);
-            });
+            
+            teams.filter(t => t.id !== 'none').forEach(tDef => {
+                const teamId = tDef.id;
+                const teamNurses = others.filter(n => n.team === teamId);
 
-            Object.keys(teamsMap).forEach(teamId => {
-                const teamNurses = teamsMap[teamId];
                 teamNurses.sort((a, b) => { // Leader first
                     if (a.role === 'leader' && b.role !== 'leader') return -1;
                     if (a.role !== 'leader' && b.role === 'leader') return 1;
                     return 0;
                 });
-                const tDef = TEAM_COLORS.find(t => t.id === teamId) || TEAM_COLORS[0];
-                const teamTitle = tDef.id !== 'none' ? `<div class="text-[11px] font-black ${tDef.text} ${tDef.bg} px-3 py-1 rounded-full shadow-sm mb-2 shrink-0">${tDef.label}</div>` : '';
+                
+                const teamTitle = `<div onclick="openTeamRosterModal('${tDef.id}')" class="text-[11px] font-black ${tDef.text} ${tDef.bg} px-4 py-1 rounded-full shadow-sm mb-2 shrink-0 cursor-pointer hover:brightness-110 active:scale-95 transition flex items-center">
+                    ${tDef.label} <i class="fa-solid fa-pen text-[9px] ml-1.5 opacity-80"></i>
+                </div>`;
 
                 let colHtml = `
                     <div class="flex flex-col items-center bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 w-full shadow-sm">
                         ${teamTitle}
-                        <div class="flex flex-row justify-center items-start flex-wrap gap-2">
+                        <div class="flex flex-row justify-center items-start flex-wrap gap-2 w-full">
                 `;
-                teamNurses.forEach(n => { colHtml += createNurseCard(n); });
+                if (teamNurses.length > 0) {
+                    teamNurses.forEach(n => { colHtml += createNurseCard(n); });
+                } else {
+                    colHtml += `<span onclick="openTeamRosterModal('${tDef.id}')" class="text-[11px] text-slate-400 py-1.5 cursor-pointer hover:text-indigo-600 font-bold"><i class="fa-solid fa-user-plus mr-1"></i>タップして本日のメンバーを選択</span>`;
+                }
                 colHtml += `</div></div>`;
                 teamsRow.innerHTML += colHtml;
             });
@@ -1100,52 +1380,255 @@
             const tbody = document.getElementById('roomsTableBody'); tbody.innerHTML = '';
             wardRooms.forEach((r, i) => {
                 let teamSelectHtml = `<select onchange="wardRooms[${i}].team=this.value" class="border border-slate-300 rounded p-1 text-xs w-full">`;
-                TEAM_COLORS.forEach(tc => { teamSelectHtml += `<option value="${tc.id}" ${r.team === tc.id ? 'selected' : ''}>${tc.label}</option>`; });
+                BASE_FOUR_TEAMS.forEach(tc => { teamSelectHtml += `<option value="${tc.id}" ${r.team === tc.id ? 'selected' : ''}>${tc.label}</option>`; });
                 teamSelectHtml += `</select>`;
                 tbody.innerHTML += `
                     <tr class="border-b bg-white hover:bg-slate-50">
-                        <td class="p-2"><input type="text" value="${r.roomNumber}" onchange="wardRooms[${i}].roomNumber=this.value" class="w-16 border border-slate-300 rounded px-1.5 py-1 font-bold text-xs"></td>
-                        <td class="p-2"><select onchange="wardRooms[${i}].position=this.value" class="border border-slate-300 rounded p-1 text-xs"><option value="top" ${r.position==='top'?'selected':''}>上部 (Top)</option><option value="left" ${r.position==='left'?'selected':''}>左側 (Left)</option><option value="right" ${r.position==='right'?'selected':''}>右側 (Right)</option><option value="bottom" ${r.position==='bottom'?'selected':''}>下部 (Bottom)</option></select></td>
-                        <td class="p-2"><select onchange="updateRoomCap(${i}, this.value)" class="border border-slate-300 rounded p-1 text-xs"><option value="1" ${r.capacity===1?'selected':''}>1床</option><option value="2" ${r.capacity===2?'selected':''}>2床</option><option value="4" ${r.capacity===4?'selected':''}>4床</option></select></td>
-                        <td class="p-2">${teamSelectHtml}</td>
+                        <td class="p-2"><input type="text" value="${r.roomNumber}" onchange="updateRoomNumber(${i}, this.value)" class="w-24 border border-slate-300 rounded px-1.5 py-1 font-bold text-xs"></td>
+                        <td class="p-2">
+                            <select onchange="wardRooms[${i}].position=this.value" class="border border-slate-300 rounded p-1 text-xs">
+                                <option value="top" ${r.position === 'top' ? 'selected' : ''}>上部 (Top)</option>
+                                <option value="left" ${r.position === 'left' ? 'selected' : ''}>左側 (Left)</option>
+                                <option value="right" ${r.position === 'right' ? 'selected' : ''}>右側 (Right)</option>
+                                <option value="bottom" ${r.position === 'bottom' ? 'selected' : ''}>下部 (Bottom)</option>
+                            </select>
+                        </td>
+                        <td class="p-2">
+                            <select onchange="updateRoomCapacity(${i}, parseInt(this.value))" class="border border-slate-300 rounded p-1 text-xs">
+                                ${[1, 2, 4, 6].map(cap => `<option value="${cap}" ${r.capacity === cap ? 'selected' : ''}>${cap}床</option>`).join('')}
+                            </select>
+                        </td>
+                        <td class="p-2 w-40">${teamSelectHtml}</td>
                         <td class="p-2 text-right"><button onclick="requestDelRoom(${i})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
                     </tr>`;
             });
         }
-        function updateRoomCap(idx, capStr) {
-            const cap = parseInt(capStr); const rNum = wardRooms[idx].roomNumber;
-            if (patients.some(p => p.room === rNum && p.bedIndex >= cap)) { 
-                showCustomAlert("削減分に患者がいます。先に移動してください。"); 
-                renderLayoutTable(); 
-                return; 
-            }
-            wardRooms[idx].capacity = cap;
+
+        function updateRoomNumber(idx, newNum) {
+            const oldNum = wardRooms[idx].roomNumber;
+            wardRooms[idx].roomNumber = newNum;
+            patients.forEach(p => { if (p.room === oldNum) p.room = newNum; });
         }
-        function addNewRoom() { wardRooms.push({ roomNumber: '新室', position: 'top', capacity: 4, team: 'none' }); renderLayoutTable(); }
+
+        function updateRoomCapacity(idx, newCap) {
+            const roomNum = wardRooms[idx].roomNumber;
+            const overPatients = patients.filter(p => p.room === roomNum && p.bedIndex >= newCap);
+            if (overPatients.length > 0) {
+                showCustomAlert(`ベッド${newCap + 1}以降に入床している患者がいるため、ベッド数を減らせません。先に患者を移動または削除してください。`);
+                renderLayoutTable();
+                return;
+            }
+            wardRooms[idx].capacity = newCap;
+        }
+
+        function addNewRoom() {
+            wardRooms.push({ roomNumber: '新規' + (wardRooms.length + 1), position: 'bottom', capacity: 4, team: 'none' });
+            renderLayoutTable();
+        }
+
         function requestDelRoom(idx) {
-            showCustomConfirm("削除しますか？患者も削除されます。", () => {
-                const rNum = wardRooms[idx].roomNumber; 
-                patients = patients.filter(p => p.room !== rNum);
-                wardRooms.splice(idx, 1); 
+            const roomNum = wardRooms[idx].roomNumber;
+            showCustomConfirm(`部屋「${roomNum}」を削除しますか？（入床中の患者データも削除されます）`, () => {
+                patients = patients.filter(p => p.room !== roomNum);
+                wardRooms.splice(idx, 1);
                 renderLayoutTable();
             });
         }
 
-        // === STAFF SETTINGS ===
+        // === STAFF SETTINGS & DAILY TEAM ROSTER ===
+
+        function addNewTeam() {
+            // まだマップにないチームをBASE_FOUR_TEAMSまたはTEAM_PRESETSから探して追加
+            const allPresets = [...BASE_FOUR_TEAMS.slice(1), ...TEAM_PRESETS];
+            const unused = allPresets.find(p => !teams.some(t => t.id === p.id));
+            if (unused) {
+                teams.push({ ...unused });
+            } else {
+                const nextAlphabet = String.fromCharCode(65 + teams.length - 1);
+                const fallback = TEAM_PRESETS[teams.length % TEAM_PRESETS.length];
+                teams.push({
+                    id: `team_${Date.now()}`,
+                    label: `${nextAlphabet}チーム`,
+                    bg: fallback.bg, text: fallback.text, border: fallback.border, light: fallback.light, dot: fallback.dot
+                });
+            }
+            renderAll();
+            showToast('本日のチーム枠を追加しました');
+        }
+
+        function deleteActiveTeamFromModal() {
+            if (!activeEditTeamId || activeEditTeamId === 'none') return;
+            const activeTeamsCount = teams.filter(t => t.id !== 'none').length;
+            if (activeTeamsCount <= 1) {
+                showCustomAlert('最低1つのチームが必要です。');
+                return;
+            }
+            const targetTeam = teams.find(t => t.id === activeEditTeamId);
+            showCustomConfirm(`本日のマップから「${targetTeam ? targetTeam.label : 'このチーム'}」を削除しますか？\n（割り当てられていたメンバーは未所属に戻ります）`, () => {
+                teams = teams.filter(t => t.id !== activeEditTeamId);
+                nurses.forEach(n => {
+                    if (n.team === activeEditTeamId) {
+                        n.team = 'none';
+                        if (n.role === 'leader') n.role = 'staff';
+                    }
+                });
+                closeTeamRosterModal();
+                showToast('チームを本日のマップから削除しました');
+            });
+        }
+        
+        function updatePersonalColors() {
+            nurses.forEach((n, idx) => {
+                n.personalColor = PERSONAL_COLORS[idx % PERSONAL_COLORS.length].id;
+            });
+        }
+
+        let activeEditTeamId = null;
+
+        function openTeamRosterModal(teamId) {
+            activeEditTeamId = teamId;
+            const tDef = teams.find(t => t.id === teamId) || BASE_FOUR_TEAMS.find(t => t.id === teamId) || teams[0];
+            document.getElementById('teamRosterModalTitle').innerHTML = `<div class="flex items-center space-x-2"><div class="w-4 h-4 rounded-full border border-white/60 shadow-sm ${tDef.bg}"></div><span>${tDef.label} の本日メンバー選択</span></div>`;
+            
+            const delBtn = document.getElementById('btnDeleteActiveTeam');
+            if (delBtn) delBtn.classList.remove('hidden');
+
+            const eligibleNurses = nurses.filter(n => n.role !== 'chief' && n.isWorking !== false);
+            const listContainer = document.getElementById('teamRosterList');
+            listContainer.innerHTML = '<p class="text-xs text-slate-500 mb-2">本日このチームとして勤務するスタッフにチェックを入れ、リーダーを1名選択してください。（他チームのスタッフも選択可能です）</p>';
+            
+            eligibleNurses.forEach(n => {
+                const isMember = n.team === teamId;
+                const isLeader = isMember && n.role === 'leader';
+                const baseTDef = BASE_FOUR_TEAMS.find(t => t.id === (n.baseTeam || n.team)) || BASE_FOUR_TEAMS[0];
+                const baseTeamBadge = (!n.baseTeam || n.baseTeam === 'none') 
+                    ? `<span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300 mr-1"></span>` 
+                    : `<span class="inline-block w-2.5 h-2.5 rounded-full ${baseTDef.bg} mr-1 shadow-2xs"></span>`;
+                const currentAssignText = (n.team && n.team !== 'none' && n.team !== teamId) 
+                    ? `<span class="text-[10px] text-amber-600 font-bold ml-1.5">[現在:${(teams.find(t=>t.id===n.team)||BASE_FOUR_TEAMS[0]).label.split(' ')[0]}]</span>` 
+                    : '';
+                
+                listContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm">
+                        <label class="flex items-center space-x-2 cursor-pointer flex-1">
+                            <input type="checkbox" id="chk_member_${n.id}" class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500" ${isMember ? 'checked' : ''} onchange="toggleTeamMember('${n.id}', this.checked)">
+                            <span class="text-sm font-bold text-slate-800 flex items-center flex-wrap">
+                                <span>${n.name}</span>
+                                <span class="text-[10px] text-slate-500 font-normal ml-2 flex items-center bg-slate-100 px-1.5 py-0.5 rounded">${baseTeamBadge}${baseTDef.label.split(' ')[0]}</span>
+                                ${currentAssignText}
+                            </span>
+                        </label>
+                        <div class="flex items-center space-x-1.5 shrink-0 ml-2">
+                            <input type="radio" name="teamLeader" id="rad_leader_${n.id}" value="${n.id}" class="w-4 h-4 text-rose-500 focus:ring-rose-500" ${isLeader ? 'checked' : ''} ${!isMember ? 'disabled' : ''}>
+                            <label for="rad_leader_${n.id}" class="text-xs font-bold text-slate-600 ${!isMember ? 'opacity-40' : ''} cursor-pointer">リーダー</label>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            const btn = document.getElementById('btnSaveTeamRoster');
+            if (btn) btn.onclick = saveTeamRoster;
+            document.getElementById('teamRosterModal').classList.remove('hidden');
+        }
+
+        function toggleTeamMember(nurseId, isChecked) {
+            const rad = document.getElementById(`rad_leader_${nurseId}`);
+            if (rad) {
+                rad.disabled = !isChecked;
+                if (!isChecked) rad.checked = false;
+                rad.nextElementSibling.classList.toggle('opacity-40', !isChecked);
+            }
+        }
+
+        function saveTeamRoster() {
+            const eligibleNurses = nurses.filter(n => n.role !== 'chief' && n.isWorking !== false);
+            const leaderRad = document.querySelector('input[name="teamLeader"]:checked');
+            const leaderId = leaderRad ? leaderRad.value : null;
+            
+            eligibleNurses.forEach(n => {
+                const chk = document.getElementById(`chk_member_${n.id}`);
+                if (chk && chk.checked) {
+                    n.team = activeEditTeamId;
+                    n.role = (n.id === leaderId) ? 'leader' : 'staff';
+                } else if (n.team === activeEditTeamId) {
+                    n.team = 'none';
+                    n.role = 'staff';
+                }
+            });
+            
+            closeTeamRosterModal();
+            showToast('本日のチームメンバーを更新しました');
+        }
+
+        function openChiefRosterModal() {
+            activeEditTeamId = null;
+            document.getElementById('teamRosterModalTitle').innerHTML = `<div class="flex items-center space-x-2"><i class="fa-solid fa-crown text-amber-400"></i><span>本日のチーフ選択</span></div>`;
+            
+            const delBtn = document.getElementById('btnDeleteActiveTeam');
+            if (delBtn) delBtn.classList.add('hidden');
+
+            const workingNurses = nurses.filter(n => n.isWorking !== false);
+            const listContainer = document.getElementById('teamRosterList');
+            listContainer.innerHTML = '<p class="text-xs text-slate-500 mb-2">本日チーフ（複数可）を担当するスタッフをチェックしてください。</p>';
+            
+            workingNurses.forEach(n => {
+                const isChief = n.role === 'chief';
+                const baseTDef = BASE_FOUR_TEAMS.find(t => t.id === (n.baseTeam || n.team)) || BASE_FOUR_TEAMS[0];
+                const teamBadge = (!n.baseTeam || n.baseTeam === 'none') 
+                    ? `<span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300 mr-1"></span>` 
+                    : `<span class="inline-block w-2.5 h-2.5 rounded-full ${baseTDef.bg} mr-1"></span>`;
+
+                listContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition">
+                        <label class="flex items-center space-x-2 cursor-pointer flex-1">
+                            <input type="checkbox" id="chk_chief_${n.id}" class="w-4 h-4 text-amber-500 rounded focus:ring-amber-500" ${isChief ? 'checked' : ''}>
+                            <span class="text-sm font-bold text-slate-800 flex items-center">${n.name} <span class="text-[10px] text-slate-500 font-normal ml-2 flex items-center bg-slate-100 px-1.5 py-0.5 rounded">${teamBadge}${baseTDef.label.split(' ')[0]}</span></span>
+                        </label>
+                    </div>
+                `;
+            });
+            
+            const btn = document.getElementById('btnSaveTeamRoster');
+            if (btn) btn.onclick = saveChiefRoster;
+            document.getElementById('teamRosterModal').classList.remove('hidden');
+        }
+
+        function saveChiefRoster() {
+            const workingNurses = nurses.filter(n => n.isWorking !== false);
+            workingNurses.forEach(n => {
+                const chk = document.getElementById(`chk_chief_${n.id}`);
+                if (chk) {
+                    if (chk.checked) {
+                        n.role = 'chief';
+                        n.team = 'none';
+                    } else if (n.role === 'chief') {
+                        n.role = 'staff';
+                        if (n.baseTeam && teams.some(t => t.id === n.baseTeam)) {
+                            n.team = n.baseTeam;
+                        }
+                    }
+                }
+            });
+            closeTeamRosterModal();
+            showToast('本日のチーフを更新しました');
+        }
+
+        function closeTeamRosterModal() {
+            document.getElementById('teamRosterModal').classList.add('hidden');
+            renderAll();
+        }
+
         function openStaffSettingsModal() { renderStaffTable(); document.getElementById('staffSettingsModal').classList.remove('hidden'); }
         function closeStaffSettingsModal() { document.getElementById('staffSettingsModal').classList.add('hidden'); renderAll(); showToast('スタッフ設定を更新しました'); }
         function renderStaffTable() {
             const tbody = document.getElementById('staffTableBody'); tbody.innerHTML = '';
             nurses.forEach((n, i) => {
-                let teamSelect = `<select onchange="nurses[${i}].team=this.value" class="border border-slate-300 rounded p-1 text-xs w-full">`;
-                TEAM_COLORS.forEach(tc => { teamSelect += `<option value="${tc.id}" ${n.team === tc.id ? 'selected' : ''}>${tc.label}</option>`; });
+                if (!n.baseTeam) n.baseTeam = n.team || 'none';
+                // スタッフ設定での所属チームは4チーム（A, B, C, D）＋共用から選択
+                let teamSelect = `<select onchange="updateStaffBaseTeam(${i}, this.value)" class="border border-slate-300 rounded p-1 text-xs w-full font-bold">`;
+                BASE_FOUR_TEAMS.forEach(tc => { teamSelect += `<option value="${tc.id}" ${n.baseTeam === tc.id ? 'selected' : ''}>${tc.label}</option>`; });
                 teamSelect += `</select>`;
                 
-                let colorSelect = `<select onchange="nurses[${i}].personalColor=this.value" class="border border-slate-300 rounded p-1 text-xs w-full font-bold">`;
-                PERSONAL_COLORS.forEach(pc => { colorSelect += `<option value="${pc.id}" ${n.personalColor === pc.id ? 'selected' : ''}>${pc.name}</option>`; });
-                colorSelect += `</select>`;
-
-                let roleSelect = `<select onchange="nurses[${i}].role=this.value" class="border border-slate-300 rounded p-1 text-xs w-full"><option value="staff" ${n.role === 'staff' ? 'selected' : ''}>スタッフ</option><option value="leader" ${n.role === 'leader' ? 'selected' : ''}>チームリーダー</option><option value="chief" ${n.role === 'chief' ? 'selected' : ''}>チーフ</option></select>`;
                 let admitCheck = `<input type="checkbox" onchange="nurses[${i}].canAdmit=this.checked" ${n.canAdmit ? 'checked' : ''} class="w-4 h-4 text-teal-600 rounded">`;
                 let workingCheck = `<input type="checkbox" onchange="toggleStaffWorking(${i}, this.checked)" ${n.isWorking !== false ? 'checked' : ''} class="w-4 h-4 text-teal-600 rounded">`;
                 let capSelect = `<select onchange="nurses[${i}].capacity=this.value" class="border border-slate-300 rounded p-1 text-xs w-full"><option value="low" ${n.capacity === 'low' ? 'selected' : ''}>低め</option><option value="normal" ${n.capacity === 'normal' ? 'selected' : ''}>通常</option><option value="high" ${n.capacity === 'high' ? 'selected' : ''}>高め</option></select>`;
@@ -1153,16 +1636,26 @@
                 tbody.innerHTML += `<tr class="border-b bg-white hover:bg-slate-50">
                     <td class="p-2"><input type="text" value="${n.name}" onchange="nurses[${i}].name=this.value" class="w-24 border border-slate-300 rounded px-1.5 py-1 font-bold text-xs"></td>
                     <td class="p-2 text-center">${workingCheck}</td>
-                    <td class="p-2 w-32">${teamSelect}</td>
-                    <td class="p-2 w-24">${colorSelect}</td>
-                    <td class="p-2 w-28">${roleSelect}</td>
+                    <td class="p-2 w-36">${teamSelect}</td>
                     <td class="p-2 text-center w-16">${admitCheck}</td>
                     <td class="p-2 w-24">${capSelect}</td>
                     <td class="p-2 text-right"><button onclick="requestDelStaff(${i})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
         }
-        function addNewStaff() { nurses.push({ id: 'N' + Date.now(), name: '新規', team: 'none', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'slate', isWorking: true }); renderStaffTable(); }
+
+        function updateStaffBaseTeam(idx, newTeamId) {
+            nurses[idx].baseTeam = newTeamId;
+            if (nurses[idx].role !== 'chief' && teams.some(t => t.id === newTeamId)) {
+                nurses[idx].team = newTeamId;
+            }
+        }
+
+        function addNewStaff() { 
+            nurses.push({ id: 'N' + Date.now(), name: '新規', baseTeam: 'blue', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', isWorking: true }); 
+            updatePersonalColors();
+            renderStaffTable(); 
+        }
         
         function toggleStaffWorking(idx, isWorking) {
             nurses[idx].isWorking = isWorking;
@@ -1185,10 +1678,9 @@
 
         // === JSON & CSV EXPORT / IMPORT ===
         function exportStaffCsv() {
-            // Excelで文字化けしないようBOMを付与
-            let csv = '\uFEFFID,氏名,チーム,役割(chief/leader/staff),個人カラー,入院対応(true/false),負荷(low/normal/high),出勤(true/false)\r\n';
+            let csv = '\uFEFFID,氏名,チーム,役割(chief/leader/staff),入院対応(true/false),負荷(low/normal/high),出勤(true/false)\r\n';
             nurses.forEach(n => {
-                csv += `"${n.id}","${n.name}","${n.team}","${n.role}","${n.personalColor}",${n.canAdmit},"${n.capacity}",${n.isWorking !== false}\r\n`;
+                csv += `"${n.id}","${n.name}","${n.team}","${n.role}",${n.canAdmit},"${n.capacity}",${n.isWorking !== false}\r\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -1209,61 +1701,56 @@
                     const lines = e.target.result.split(/\r\n|\n/);
                     let importedCount = 0;
                     lines.forEach((line, idx) => {
-                        if (idx === 0 || !line.trim()) return; // ヘッダーと空行をスキップ
+                        if (idx === 0 || !line.trim()) return;
                         
-                        // ダブルクォートを考慮してカンマ区切りをパース
                         const cols = line.split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
-                        if (cols.length >= 8) {
+                        if (cols.length >= 7) {
                             const id = cols[0] || ('N' + Date.now() + Math.floor(Math.random() * 1000));
                             const name = cols[1];
                             const team = cols[2];
                             const role = cols[3];
-                            const personalColor = cols[4];
-                            const canAdmit = cols[5] === 'true';
-                            const capacity = cols[6];
-                            const isWorking = cols[7] === 'true';
+                            const canAdmit = cols[4] === 'true';
+                            const capacity = cols[5];
+                            const isWorking = cols[6] === 'true';
 
                             const existingNurse = nurses.find(n => n.id === id);
                             if (existingNurse) {
-                                // 既存のスタッフ情報を更新
                                 existingNurse.name = name;
                                 existingNurse.team = team;
                                 existingNurse.role = role;
-                                existingNurse.personalColor = personalColor;
                                 existingNurse.canAdmit = canAdmit;
                                 existingNurse.capacity = capacity;
                                 existingNurse.isWorking = isWorking;
                             } else {
-                                // 新規スタッフとして追加
-                                nurses.push({ id, name, team, role, personalColor, canAdmit, capacity, isWorking });
+                                nurses.push({ id, name, team, role, canAdmit, capacity, isWorking });
                             }
                             importedCount++;
                         }
                     });
+                    updatePersonalColors();
                     renderStaffTable();
                     renderAll();
                     showToast(`${importedCount}件のスタッフデータを読み込みました`);
                 } catch (err) {
                     showCustomAlert('CSVの読み込みに失敗しました。');
                 }
-                event.target.value = ''; // 連続で同じファイルを読み込めるようにリセット
+                event.target.value = '';
             };
             reader.readAsText(file);
         }
 
         function exportData() {
-            const dataObj = { clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules };
+            saveToLocalStorage();
+            const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, savedAt: new Date().toLocaleString('ja-JP') };
             const dataStr = JSON.stringify(dataObj, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            const now = new Date();
-            const dateStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
-            a.download = `病棟配分データ_${dateStr}.json`;
+            a.download = `ward_allocation_data.json`;
             a.click();
             URL.revokeObjectURL(url);
-            showToast('データを保存しました');
+            showToast('ward_allocation_data.json を保存しました');
         }
 
         function importData(event) {
@@ -1273,13 +1760,9 @@
             reader.onload = (e) => {
                 try {
                     const dataObj = JSON.parse(e.target.result);
-                    if (dataObj.clinicalWorkloadItems) clinicalWorkloadItems = dataObj.clinicalWorkloadItems;
-                    if (dataObj.wardRooms) wardRooms = dataObj.wardRooms;
-                    if (dataObj.nurses) nurses = dataObj.nurses;
-                    if (dataObj.patients) patients = dataObj.patients;
-                    if (dataObj.allocationRules) allocationRules = dataObj.allocationRules;
-                    renderAll();
-                    showToast('データを読み込みました');
+                    applyLoadedData(dataObj);
+                    saveToLocalStorage();
+                    showToast(`「${file.name}」を読み込みました`);
                 } catch (err) {
                     showCustomAlert('ファイルの読み込みに失敗しました。正しいJSONファイルか確認してください。');
                 }
@@ -1345,10 +1828,13 @@
                     // 4. Room Strategy Rule
                     if (roomDef && roomDef.capacity >= 2) {
                         let currentCountInRoom = nRoomCount[n.id][p.room] || 0;
-                        if (currentCountInRoom >= 1) {
-                            if (allocationRules.roomStrategy === 'prevent') {
-                                score += 3000; // Strong penalty to avoid taking a 2nd patient
-                            } else if (allocationRules.roomStrategy === 'encourage') {
+                        let maxAllowed = allocationRules.maxPatientsPerRoom || 1;
+                        if (allocationRules.roomStrategy === 'prevent') {
+                            if (currentCountInRoom >= maxAllowed) {
+                                score += 3000; // Strong penalty when exceeding max allowed patients per room
+                            }
+                        } else if (allocationRules.roomStrategy === 'encourage') {
+                            if (currentCountInRoom >= 1) {
                                 score -= 50; // Reward for taking patients in the same room
                             }
                         }
@@ -1377,6 +1863,7 @@
         }
 
         // === RENDER INITIALIZER ===
+        let isInitialRender = true;
         function renderAll() {
             const tot = patients.length;
             const ass = patients.filter(p => p.nurseId).length;
@@ -1388,10 +1875,17 @@
 
             if (currentViewMode === 'map') renderMap();
             else renderListView();
+
+            if (!isInitialRender) {
+                saveToLocalStorage();
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            updatePersonalColors();
             renderAll();
+            isInitialRender = false;
+            checkAutoLoadJsonOnStartup();
         });
     </script>
 </body>
