@@ -455,6 +455,42 @@
         </div>
     </div>
 
+    <!-- Room Edit Modal (New) -->
+    <div id="roomEditModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
+            <div class="bg-teal-700 text-white p-4 flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-base"><i class="fa-solid fa-bed text-teal-200 mr-2"></i>部屋の設定</h3>
+                </div>
+                <button onclick="closeRoomEditModal()" class="w-8 h-8 rounded-full bg-teal-600 hover:bg-teal-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-5 space-y-4 bg-slate-50">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">部屋番号・名称</label>
+                    <input type="text" id="editRoomNumber" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ベッド数（定員）</label>
+                    <select id="editRoomCapacity" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
+                        <option value="1">1床</option>
+                        <option value="2">2床</option>
+                        <option value="4">4床</option>
+                        <option value="6">6床</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">担当チームカラー</label>
+                    <select id="editRoomTeam" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
+                    </select>
+                </div>
+            </div>
+            <div class="p-3 border-t bg-white flex justify-end space-x-2">
+                <button onclick="closeRoomEditModal()" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-xl font-bold text-xs transition">キャンセル</button>
+                <button onclick="saveRoomEdit()" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition">保存</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Help Modal -->
     <div id="helpModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
         <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -1017,6 +1053,73 @@
             });
         }
 
+        // === ROOM EDIT MODAL (UPDATED) ===
+        let activeEditRoomIndex = -1;
+
+        function openRoomEditModal(oldRoomNumber) {
+            const roomIdx = wardRooms.findIndex(r => r.roomNumber === oldRoomNumber);
+            if (roomIdx === -1) return;
+            activeEditRoomIndex = roomIdx;
+            const room = wardRooms[roomIdx];
+            
+            document.getElementById('editRoomNumber').value = room.roomNumber;
+            document.getElementById('editRoomCapacity').value = room.capacity;
+            
+            const teamSelect = document.getElementById('editRoomTeam');
+            teamSelect.innerHTML = '';
+            BASE_FOUR_TEAMS.forEach(tc => {
+                teamSelect.innerHTML += `<option value="${tc.id}" ${room.team === tc.id ? 'selected' : ''}>${tc.label}</option>`;
+            });
+
+            document.getElementById('roomEditModal').classList.remove('hidden');
+        }
+
+        function closeRoomEditModal() {
+            document.getElementById('roomEditModal').classList.add('hidden');
+            activeEditRoomIndex = -1;
+        }
+
+        function saveRoomEdit() {
+            if (activeEditRoomIndex === -1) return;
+            
+            const newName = document.getElementById('editRoomNumber').value.trim();
+            const newCap = parseInt(document.getElementById('editRoomCapacity').value);
+            const newTeam = document.getElementById('editRoomTeam').value;
+            
+            const room = wardRooms[activeEditRoomIndex];
+            const oldName = room.roomNumber;
+
+            if (!newName) {
+                showCustomAlert("部屋番号を入力してください。");
+                return;
+            }
+
+            if (newName !== oldName && wardRooms.some(r => r.roomNumber === newName)) {
+                showCustomAlert("すでに存在する部屋番号です。");
+                return;
+            }
+
+            if (newCap < room.capacity) {
+                const overPatients = patients.filter(p => p.room === oldName && p.bedIndex >= newCap);
+                if (overPatients.length > 0) {
+                    showCustomAlert(`ベッド${newCap + 1}以降に入床している患者がいるため、ベッド数を減らせません。先に患者を移動または削除してください。`);
+                    return;
+                }
+            }
+
+            room.roomNumber = newName;
+            room.capacity = newCap;
+            room.team = newTeam;
+
+            if (newName !== oldName) {
+                patients.forEach(p => { if (p.room === oldName) p.room = newName; });
+            }
+
+            closeRoomEditModal();
+            renderAll();
+            showToast('部屋の設定を変更しました');
+        }
+
         // === RENDERING ===
         function createRoomQuad(room) {
             const div = document.createElement('div');
@@ -1063,7 +1166,7 @@
 
             div.innerHTML = `
                 <div class="flex items-center justify-between px-2 mb-1 border-b-2 ${teamDef.border} bg-white py-1">
-                    <span class="text-sm font-black tracking-wide text-slate-800">${room.roomNumber}</span>
+                    <span class="text-sm font-black tracking-wide text-slate-800 cursor-pointer hover:text-teal-600 transition" onclick="openRoomEditModal('${room.roomNumber}')" title="部屋の設定を変更">${room.roomNumber}</span>
                     ${teamBadge}
                 </div>
                 <div class="grid ${gridCols} bg-slate-400 gap-px border border-slate-400 shadow-sm">
