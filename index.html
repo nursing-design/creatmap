@@ -26,7 +26,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
         .modal-blur { backdrop-filter: blur(4px); }
         .bed-cell {
-            background-color: #ffffff; min-height: 60px; transition: background-color 0.15s ease; touch-action: none; 
+            background-color: #ffffff; min-height: 48px; transition: background-color 0.15s ease; touch-action: none; 
         }
         .bed-cell:active { transform: scale(0.98); }
         .drag-clone {
@@ -41,16 +41,16 @@
 <body class="bg-slate-100 text-slate-800 antialiased h-screen flex flex-col overflow-hidden font-sans relative">
 
     <!-- HEADER -->
-    <header class="bg-white border-b border-slate-200 px-4 py-2.5 flex flex-wrap items-center justify-between shadow-xs flex-shrink-0 z-20 gap-2">
+    <header class="bg-white border-b border-slate-200 px-3 py-1.5 flex flex-wrap items-center justify-between shadow-xs flex-shrink-0 z-20 gap-2">
         <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white text-lg shadow-sm">
+            <div class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white text-base shadow-sm">
                 <i class="fa-solid fa-hospital"></i>
             </div>
             <div>
                 <div class="flex items-center space-x-2">
-                    <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">受持配分マップ　Ver.1</h1>
+                    <h1 class="text-sm sm:text-base font-black text-slate-900 tracking-tight">受持配分マップ　Ver.1</h1>
                 </div>
-                <p class="text-[11px] text-slate-500">外周病室 × 中央ステーション構成</p>
+                <p class="text-[10px] text-slate-500">外周病室 × 中央ステーション構成</p>
             </div>
         </div>
 
@@ -96,6 +96,10 @@
                 <span class="hidden lg:inline">読込</span>
                 <input type="file" onchange="importData(event)" accept=".json" class="hidden">
             </label>
+            <button onclick="clearAllAllocations()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold rounded-xl shadow-sm flex items-center space-x-1.5 active:scale-95 transition">
+                <i class="fa-solid fa-eraser"></i>
+                <span class="hidden lg:inline">割当クリア</span>
+            </button>
             <button onclick="triggerAutoAllocation()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-black rounded-xl shadow-md shadow-teal-600/20 flex items-center space-x-1.5 active:scale-95 transition">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <span>自動配分</span>
@@ -146,25 +150,29 @@
                 <div id="leftRoomsContainer" class="flex flex-col space-y-3 w-[200px] flex-shrink-0 justify-center"></div>
 
                 <!-- CENTER STATION -->
-                <div class="flex-1 mx-4 sm:mx-6 flex flex-col items-center justify-center relative min-w-[500px]">
-                    <div class="w-full h-full border-2 border-dashed border-slate-300 bg-slate-50 rounded-3xl p-3 sm:p-4 flex flex-col items-center shadow-inner relative">
-                        <div class="absolute -top-3 bg-slate-700 text-white px-4 py-1 rounded-full text-xs font-black shadow-sm flex items-center space-x-1.5">
+                <div class="flex-1 mx-3 sm:mx-4 flex flex-col items-center justify-center relative min-w-[450px]">
+                    <div class="w-full h-full border-2 border-dashed border-slate-300 bg-slate-50 rounded-3xl p-2 sm:p-3 flex flex-col items-center shadow-inner relative">
+                        <div class="absolute -top-3 bg-slate-700 text-white px-3 py-1 rounded-full text-[11px] font-black shadow-sm flex items-center space-x-1.5">
                             <i class="fa-solid fa-user-nurse"></i>
                             <span>中央ステーション (受持看護師)</span>
                         </div>
-                        <!-- NEW BUTTONS: Team Add Only -->
-                        <div class="absolute top-3 right-3 flex flex-col space-y-2 z-10">
-                            <button onclick="addNewTeam()" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md flex items-center space-x-1 text-[11px] font-bold transition active:scale-95" title="本日の稼働チームを追加">
-                                <i class="fa-solid fa-plus text-[10px]"></i>
-                                <span>チーム追加</span>
+                        <!-- BUTTONS: Chief Add & Team Add -->
+                        <div class="absolute top-2 right-2 flex space-x-2 z-10">
+                            <button id="btnAdChiefFrame" onclick="addChiefFrame()" class="hidden px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg shadow-md flex items-center space-x-1 text-[10px] font-bold transition active:scale-95" title="チーフ枠を追加">
+                                <i class="fa-solid fa-plus text-[9px]"></i>
+                                <span>チーフ枠</span>
+                            </button>
+                            <button onclick="addNewTeam()" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md flex items-center space-x-1 text-[10px] font-bold transition active:scale-95" title="本日の稼働チームを追加">
+                                <i class="fa-solid fa-plus text-[9px]"></i>
+                                <span>チーム</span>
                             </button>
                         </div>
 
-                        <div id="centerNurseGrid" class="w-full flex flex-col items-center mt-3 space-y-2.5">
-                            <!-- Chief Row -->
-                            <div id="chiefRow" class="flex flex-row justify-center space-x-3 w-full"></div>
+                        <div id="centerNurseGrid" class="w-full flex flex-col items-center mt-4 space-y-2">
+                            <!-- Chief Row & Admission Room Row -->
+                            <div id="chiefRow" class="flex flex-row items-stretch justify-center space-x-2 w-full"></div>
                             <!-- Teams Row -->
-                            <div id="teamsRow" class="flex flex-col space-y-2.5 w-full items-center"></div>
+                            <div id="teamsRow" class="flex flex-col space-y-2 w-full items-center"></div>
                         </div>
                     </div>
                 </div>
@@ -281,13 +289,26 @@
                     <span id="popoverPatientRoomBadge" class="px-2.5 py-1 rounded-lg bg-teal-500 font-black text-sm"></span>
                     <div>
                         <h3 id="popoverPatientName" class="font-extrabold text-base"></h3>
-                        <span id="popoverPatientAssignedStaff" class="text-[11px] text-teal-300 block font-bold"></span>
+                        <span id="popoverPatientAssignedStaff" class="text-[11px] text-teal-300 block font-bold hidden"></span>
                     </div>
                 </div>
                 <button onclick="closeFloatingPopover()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
+            
+            <!-- NEW: Assignment & Planned Bed Editor -->
+            <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap gap-3">
+                <div class="flex-1 min-w-[140px]">
+                    <label class="block text-[10px] font-bold text-slate-500 mb-1">担当看護師 (受持)</label>
+                    <select id="popoverNurseSelect" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm"></select>
+                </div>
+                <div class="flex-1 min-w-[140px] hidden" id="popoverPlannedBedContainer">
+                    <label class="block text-[10px] font-bold text-slate-500 mb-1">予定ベッド (転入・移動先)</label>
+                    <input type="text" id="popoverPlannedBed" placeholder="例: 201-1" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm">
+                </div>
+            </div>
+
             <div class="bg-teal-50 border-b border-teal-200 px-4 py-2 flex items-center justify-between">
                 <span class="text-xs font-bold text-teal-900">臨床状態の負荷を選択</span>
                 <div class="flex items-center space-x-1">
@@ -300,7 +321,6 @@
             <div class="p-3 border-t bg-slate-50 flex items-center justify-between">
                 <div class="flex space-x-2">
                     <button onclick="requestPatientDeletion()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg transition shadow-sm"><i class="fa-solid fa-trash-can mr-1"></i>患者削除</button>
-                    <button onclick="unassignCurrentPopoverPatient()" class="px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-xs rounded-lg transition">受持を解除</button>
                 </div>
                 <div class="flex space-x-2">
                     <button onclick="closeFloatingPopover()" class="px-4 py-2 text-slate-600 font-bold text-xs">キャンセル</button>
@@ -696,8 +716,7 @@
             { roomNumber: '202', position: 'left', capacity: 4, team: 'blue' },
             { roomNumber: '203', position: 'right', capacity: 4, team: 'green' },
             { roomNumber: '204', position: 'right', capacity: 4, team: 'green' },
-            { roomNumber: '207-2', position: 'bottom', capacity: 4, team: 'none' },
-            { roomNumber: '207-1', position: 'bottom', capacity: 4, team: 'none' }
+            { roomNumber: '転入院枠', position: 'center', capacity: 3, team: 'none' }
         ];
 
         let nurses = [
@@ -711,17 +730,18 @@
         ];
 
         let patients = [
-            { id: 'P1', room: '205-2', bedIndex: 0, name: '山田 太郎', state: { iv: '通常', careLevel: '低い' }, nurseId: null },
-            { id: 'P2', room: '205-2', bedIndex: 1, name: '佐藤 健二', state: { surgery: '術前日' }, nurseId: null },
-            { id: 'P3', room: '205-1', bedIndex: 0, name: '田中 実', state: { surgery: '術後ケア', careLevel: '高い' }, nurseId: null },
-            { id: 'P4', room: '201', bedIndex: 0, name: '伊藤 和雄', state: { iv: '多い', surgery: '術当日' }, nurseId: null },
-            { id: 'P5', room: '207-1', bedIndex: 0, name: '森 節子', state: { admission: '入院あり' }, nurseId: null }
+            { id: 'P1', room: '205-2', bedIndex: 0, name: '山田 太郎', state: { iv: '通常', careLevel: '低い' }, nurseId: null, plannedBed: '' },
+            { id: 'P2', room: '205-2', bedIndex: 1, name: '佐藤 健二', state: { surgery: '術前日' }, nurseId: null, plannedBed: '' },
+            { id: 'P3', room: '205-1', bedIndex: 0, name: '田中 実', state: { surgery: '術後ケア', careLevel: '高い' }, nurseId: null, plannedBed: '' },
+            { id: 'P4', room: '201', bedIndex: 0, name: '伊藤 和雄', state: { iv: '多い', surgery: '術当日' }, nurseId: null, plannedBed: '205-1' },
+            { id: 'P5', room: '転入院枠', bedIndex: 0, name: '森 節子', state: { admission: '入院あり' }, nurseId: null, plannedBed: '202-1' }
         ];
 
         let activePaintStaffId = null;
         let activePopoverPatientId = null;
         let tempState = {};
         let currentViewMode = 'map';
+        let showChiefFrame = true;
 
         let dragState = { isDown: false, isDragging: false, startX: 0, startY: 0, patientId: null, sourceRoom: null, sourceBed: null, clone: null, el: null };
 
@@ -735,13 +755,24 @@
             if (dataObj.nurses) nurses = dataObj.nurses;
             if (dataObj.patients) patients = dataObj.patients;
             if (dataObj.allocationRules) allocationRules = dataObj.allocationRules;
+            if (dataObj.showChiefFrame !== undefined) showChiefFrame = dataObj.showChiefFrame;
+            
+            // Migrate Admission room if needed
+            let admRoom = wardRooms.find(r => r.roomNumber === '転入院枠' || r.roomNumber === '転入院');
+            if (admRoom) {
+                admRoom.position = 'center';
+                if (admRoom.capacity > 3) admRoom.capacity = 3;
+            } else {
+                wardRooms.push({ roomNumber: '転入院枠', position: 'center', capacity: 3, team: 'none' });
+            }
+
             updatePersonalColors();
             renderAll();
         }
 
         function saveToLocalStorage() {
             try {
-                const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, savedAt: new Date().toLocaleString('ja-JP') };
+                const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, showChiefFrame, savedAt: new Date().toLocaleString('ja-JP') };
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataObj));
             } catch (e) {
                 console.warn('LocalStorage save failed:', e);
@@ -1123,8 +1154,10 @@
         // === RENDERING ===
         function createRoomQuad(room) {
             const div = document.createElement('div');
-            div.className = "flex flex-col w-[160px] sm:w-[180px] flex-shrink-0";
-            let gridCols = room.capacity === 1 ? 'grid-cols-1' : (room.capacity === 2 ? 'grid-cols-2' : 'grid-cols-2');
+            div.className = "flex flex-col w-[130px] sm:w-[140px] flex-shrink-0";
+            let gridCols = room.capacity === 1 ? 'grid-cols-1' : (room.capacity === 2 ? 'grid-cols-2' : (room.capacity === 6 ? 'grid-cols-3' : 'grid-cols-2'));
+            if ((room.roomNumber === '転入院枠' || room.roomNumber === '転入院') && room.capacity === 3) gridCols = 'grid-cols-3';
+
             const teamDef = teams.find(t => t.id === room.team) || BASE_FOUR_TEAMS.find(t => t.id === room.team) || BASE_FOUR_TEAMS[0];
             const teamBadge = room.team === 'none' ? '' : `<span class="text-[9px] px-1.5 py-0.5 rounded ${teamDef.bg} ${teamDef.text} shadow-sm">${teamDef.label.split(' ')[0]}</span>`;
 
@@ -1143,21 +1176,28 @@
                     const pt = calcPoints(p.state);
                     const ptClass = pt >= 8 ? 'bg-rose-500' : (pt >= 4 ? 'bg-amber-500' : 'bg-emerald-600');
 
+                    const plannedBedText = (room.roomNumber === '転入院枠' || room.roomNumber === '転入院') ? 
+                        (p.plannedBed 
+                            ? `<div class="text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded px-1 mt-0.5 truncate text-center w-full shadow-sm">${p.plannedBed}予定</div>` 
+                            : `<div class="text-[8px] font-bold text-slate-400 border border-dashed border-slate-300 rounded px-1 mt-0.5 truncate text-center w-full bg-slate-50">+予定ﾍﾞｯﾄﾞ</div>`
+                        ) : '';
+
                     bedsHtml += `
                         <div data-room="${room.roomNumber}" data-bed="${i}" onpointerdown="onBedPointerDown(event, '${room.roomNumber}', ${i}, '${p.id}')" onpointermove="onBedPointerMove(event)" onpointerup="onBedPointerUp(event)"
-                             class="bed-cell p-1.5 flex flex-col justify-between cursor-pointer ${bg} hover:brightness-95 relative border border-slate-300">
-                            <div class="flex items-center space-x-1.5 overflow-hidden">
+                             class="bed-cell p-1 flex flex-col justify-between cursor-pointer ${bg} hover:brightness-95 relative border border-slate-300 min-h-[50px]">
+                            <div class="flex items-center space-x-1.5 overflow-hidden w-full">
                                 ${circle}
-                                <span class="font-extrabold text-xs text-slate-900 leading-tight truncate">${p.name}</span>
+                                <span class="font-extrabold text-[11px] text-slate-900 leading-tight truncate flex-1">${p.name}</span>
                             </div>
+                            ${plannedBedText}
                             <div class="flex items-center justify-end mt-1">
-                                <span class="text-[10px] font-black px-1.5 py-0.5 rounded text-white shadow-sm ${ptClass}">${pt}pt</span>
+                                <span class="text-[9px] font-black px-1.5 py-0.5 rounded text-white shadow-sm ${ptClass}">${pt}pt</span>
                             </div>
                         </div>`;
                 } else {
                     bedsHtml += `
                         <div data-room="${room.roomNumber}" data-bed="${i}" onpointerdown="onBedPointerDown(event, '${room.roomNumber}', ${i}, 'null')" onpointermove="onBedPointerMove(event)" onpointerup="onBedPointerUp(event)"
-                             class="bed-cell p-1 flex flex-col items-center justify-center cursor-pointer bg-slate-50 text-slate-400 border border-slate-300 hover:bg-teal-50">
+                             class="bed-cell p-1 flex flex-col items-center justify-center cursor-pointer bg-slate-50 text-slate-400 border border-slate-300 hover:bg-teal-50 min-h-[50px]">
                             <i class="fa-solid fa-plus text-[10px] opacity-50 mb-0.5"></i>
                             <span class="text-[9px] font-bold">空床</span>
                         </div>`;
@@ -1165,8 +1205,8 @@
             }
 
             div.innerHTML = `
-                <div class="flex items-center justify-between px-2 mb-1 border-b-2 ${teamDef.border} bg-white py-1">
-                    <span class="text-sm font-black tracking-wide text-slate-800 cursor-pointer hover:text-teal-600 transition" onclick="openRoomEditModal('${room.roomNumber}')" title="部屋の設定を変更">${room.roomNumber}</span>
+                <div class="flex items-center justify-between px-2 mb-1 border-b-2 ${teamDef.border} bg-white py-0.5">
+                    <span class="text-xs font-black tracking-wide text-slate-800 cursor-pointer hover:text-teal-600 transition" onclick="openRoomEditModal('${room.roomNumber}')" title="部屋の設定を変更">${room.roomNumber}</span>
                     ${teamBadge}
                 </div>
                 <div class="grid ${gridCols} bg-slate-400 gap-px border border-slate-400 shadow-sm">
@@ -1211,37 +1251,53 @@
 
                 return `
                     <div onclick="toggleStaffPaint('${nurse.id}')" 
-                         class="p-1.5 sm:p-2 rounded-xl border-2 cursor-pointer transition active:scale-95 flex flex-col items-center w-[100px] sm:w-[110px] bg-white relative
+                         class="p-1 sm:p-1.5 rounded-xl border-2 cursor-pointer transition active:scale-95 flex flex-col items-center w-[85px] sm:w-[95px] bg-white relative
                          ${active ? `ring-4 ring-slate-900 ${tDef.border}` : `border-slate-300 hover:border-slate-400 shadow-sm`}">
                         ${roleBadge}
-                        <div class="flex items-center space-x-1.5 mb-1.5">
-                            <div class="w-3.5 h-3.5 rounded-full ${pDef.bg} border border-black/10 shadow-sm shrink-0"></div>
-                            <span class="text-[11px] sm:text-xs font-black text-slate-900 truncate max-w-[65px]">${nurse.name}</span>
+                        <div class="flex items-center space-x-1 mb-1">
+                            <div class="w-3 h-3 rounded-full ${pDef.bg} border border-black/10 shadow-sm shrink-0"></div>
+                            <span class="text-[10px] sm:text-[11px] font-black text-slate-900 truncate max-w-[55px]">${nurse.name}</span>
                             ${admitIcon}
                         </div>
-                        <div class="w-full flex justify-between px-1.5 py-0.5 bg-slate-100 rounded text-[10px] items-center">
+                        <div class="w-full flex justify-between px-1.5 py-0.5 bg-slate-100 rounded text-[9px] items-center">
                             <span class="font-bold text-slate-600">${assigned.length}名</span>
                             <span class="font-black ${score > 15 ? 'text-rose-600' : 'text-slate-700'}">${score}pt</span>
                         </div>
                     </div>`;
             };
 
-            // 1. Chiefs Top (Always show frame so user can click to assign chief)
-            const chiefs = workingNurses.filter(n => n.role === 'chief');
-            let chiefHtml = `<div class="flex flex-col items-center bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 w-full shadow-sm relative">
-                <div onclick="openChiefRosterModal()" class="text-[11px] font-black text-slate-800 bg-slate-200 hover:bg-slate-300 px-4 py-1 rounded-full shadow-sm mb-2 cursor-pointer transition active:scale-95 flex items-center">
-                    <i class="fa-solid fa-crown text-amber-500 mr-1.5"></i>チーフ <i class="fa-solid fa-pen text-[9px] ml-1.5 opacity-70"></i>
-                </div>
-                <div class="flex flex-row justify-center items-start flex-wrap gap-2 w-full">`;
-            if (chiefs.length > 0) {
-                chiefs.forEach(c => { chiefHtml += createNurseCard(c); });
-            } else {
-                chiefHtml += `<span onclick="openChiefRosterModal()" class="text-[11px] text-slate-400 py-1 cursor-pointer hover:text-slate-600">タップして本日のチーフを選択</span>`;
+            // Toggle Chief Add Button Visibility
+            const btnAddChief = document.getElementById('btnAdChiefFrame');
+            if (btnAddChief) {
+                if (showChiefFrame) btnAddChief.classList.add('hidden');
+                else btnAddChief.classList.remove('hidden');
             }
-            chiefHtml += `</div></div>`;
-            chiefRow.innerHTML = chiefHtml;
 
-            // 2. Horizontal Team Layout (Always show active teams on map even if 0 members)
+            // 1. Chiefs & Admission Top Row
+            if (showChiefFrame) {
+                const chiefs = workingNurses.filter(n => n.role === 'chief');
+                const chiefDiv = document.createElement('div');
+                chiefDiv.className = "flex-1 flex flex-col items-center justify-center bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm relative min-w-[100px] max-w-[160px]";
+                chiefDiv.innerHTML = `
+                    <button onclick="removeChiefFrame()" class="absolute top-1 right-1 text-rose-300 hover:text-rose-500 p-0.5"><i class="fa-solid fa-xmark text-[10px]"></i></button>
+                    <div onclick="openChiefRosterModal()" class="text-[10px] font-black text-slate-800 bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full shadow-sm mb-1.5 cursor-pointer transition active:scale-95 flex items-center mt-0.5">
+                        <i class="fa-solid fa-crown text-amber-500 mr-1.5"></i>チーフ <i class="fa-solid fa-pen text-[8px] ml-1.5 opacity-70"></i>
+                    </div>
+                    <div class="flex flex-row justify-center items-start flex-wrap gap-1.5 w-full">
+                        ${chiefs.length > 0 ? chiefs.map(createNurseCard).join('') : `<span onclick="openChiefRosterModal()" class="text-[9px] text-slate-400 py-1 cursor-pointer hover:text-slate-600">タップして選択</span>`}
+                    </div>
+                `;
+                chiefRow.appendChild(chiefDiv);
+            }
+
+            const admissionRoom = wardRooms.find(r => r.position === 'center' || r.roomNumber === '転入院枠' || r.roomNumber === '転入院');
+            if (admissionRoom) {
+                const admQuad = createRoomQuad(admissionRoom);
+                admQuad.className = "flex flex-col flex-1 min-w-[130px] max-w-[200px]"; // Override width for center
+                chiefRow.appendChild(admQuad);
+            }
+
+            // 2. Horizontal Team Layout
             const others = workingNurses.filter(n => n.role !== 'chief');
             
             teams.filter(t => t.id !== 'none').forEach(tDef => {
@@ -1259,9 +1315,9 @@
                 </div>`;
 
                 let colHtml = `
-                    <div class="flex flex-col items-center bg-white p-2 sm:p-2.5 rounded-2xl border border-slate-200 w-full shadow-sm">
+                    <div class="flex flex-col items-center bg-white p-1.5 sm:p-2 rounded-xl border border-slate-200 w-full shadow-sm">
                         ${teamTitle}
-                        <div class="flex flex-row justify-center items-start flex-wrap gap-2 w-full">
+                        <div class="flex flex-row justify-center items-start flex-wrap gap-1.5 w-full">
                 `;
                 if (teamNurses.length > 0) {
                     teamNurses.forEach(n => { colHtml += createNurseCard(n); });
@@ -1278,29 +1334,42 @@
             const thead = document.getElementById('listViewTableHeader');
             const tbody = document.getElementById('listViewTableBody');
             
-            let headHtml = `<th class="p-2 w-16">病室-床</th><th class="p-2 w-24">患者名</th><th class="p-2 w-16 text-center">担当</th><th class="p-2 w-16 text-center text-teal-700">総点</th>`;
+            let headHtml = `<th class="p-2 w-16">病室-床</th><th class="p-2 w-24">患者名</th><th class="p-2 w-16 text-center">担当</th><th class="p-2 w-20">予定ベッド</th><th class="p-2 w-16 text-center text-teal-700">総点</th>`;
             clinicalWorkloadItems.forEach(item => {
-                headHtml += `<th class="p-2 font-semibold text-slate-600 min-w-[110px]"><i class="fa-solid ${item.icon} mr-1 text-[10px]"></i>${item.title}</th>`;
+                headHtml += `<th class="p-2 font-semibold text-slate-600 min-w-[90px]"><i class="fa-solid ${item.icon} mr-1 text-[10px]"></i>${item.title}</th>`;
             });
-            headHtml += `<th class="p-2 w-16 text-center text-rose-600">削除</th>`;
+            headHtml += `<th class="p-2 w-12 text-center text-rose-600">削除</th>`;
             thead.innerHTML = headHtml;
             tbody.innerHTML = '';
 
             let sortedPatients = [...patients].sort((a, b) => {
+                if (a.room === '転入院枠' && b.room !== '転入院枠') return 1;
+                if (a.room !== '転入院枠' && b.room === '転入院枠') return -1;
                 if (a.room === b.room) return a.bedIndex - b.bedIndex;
                 return a.room.localeCompare(b.room);
             });
 
             sortedPatients.forEach(p => {
                 const totalPts = calcPoints(p.state);
-                const nurse = nurses.find(n => n.id === p.nurseId);
-                const pDef = nurse ? (PERSONAL_COLORS.find(c => c.id === nurse.personalColor) || PERSONAL_COLORS[0]) : null;
-                const nBadge = nurse ? `<span class="${pDef.bg} ${pDef.text} text-[10px] px-1.5 py-0.5 rounded font-bold shadow-sm">${nurse.name}</span>` : `<span class="text-[10px] text-rose-500 font-bold">未</span>`;
                 const ptClass = totalPts >= 8 ? 'text-rose-600' : (totalPts >= 4 ? 'text-amber-600' : 'text-emerald-600');
+                
+                let nurseSelectHtml = `<select onchange="updatePatientNurseFromList('${p.id}', this.value)" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs font-bold bg-white focus:outline-none focus:ring-1 focus:ring-teal-500">`;
+                nurseSelectHtml += `<option value="">(未割当)</option>`;
+                nurses.filter(n => n.isWorking !== false && n.role !== 'chief').forEach(n => {
+                    nurseSelectHtml += `<option value="${n.id}" ${n.id === p.nurseId ? 'selected' : ''}>${n.name}</option>`;
+                });
+                nurseSelectHtml += `</select>`;
+
+                let plannedBedInput = (p.room === '転入院' || p.room === '転入院枠') 
+                    ? `<input type="text" value="${p.plannedBed || ''}" onchange="updatePatientPlannedBed('${p.id}', this.value)" class="w-full border border-slate-300 rounded px-2 py-1 text-xs font-bold bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 placeholder-slate-300" placeholder="予定">`
+                    : `<span class="text-slate-300 text-xs">-</span>`;
 
                 let rowHtml = `<tr class="border-b hover:bg-slate-50 transition">
                     <td class="p-2 font-mono text-slate-500">${p.room}-${p.bedIndex + 1}</td>
-                    <td class="p-2 font-bold text-slate-900">${p.name}</td><td class="p-2 text-center">${nBadge}</td><td class="p-2 text-center font-black ${ptClass}">${totalPts}</td>
+                    <td class="p-2 font-bold text-slate-900 text-[11px] sm:text-xs">${p.name}</td>
+                    <td class="p-2 text-center">${nurseSelectHtml}</td>
+                    <td class="p-2">${plannedBedInput}</td>
+                    <td class="p-2 text-center font-black ${ptClass}">${totalPts}</td>
                 `;
                 clinicalWorkloadItems.forEach(item => {
                     const currentVal = p.state[item.id] || 'なし';
@@ -1320,6 +1389,16 @@
         function updatePatientStateFromList(pId, itemId, val) {
             const p = patients.find(p => p.id === pId);
             if (p) { p.state[itemId] = val; renderAll(); }
+        }
+
+        function updatePatientNurseFromList(pId, val) {
+            const p = patients.find(p => p.id === pId);
+            if (p) { p.nurseId = val || null; renderAll(); }
+        }
+
+        function updatePatientPlannedBed(pId, val) {
+            const p = patients.find(p => p.id === pId);
+            if (p) { p.plannedBed = val.trim(); renderAll(); }
         }
 
         function toggleStaffPaint(id) {
@@ -1352,14 +1431,33 @@
             const nurse = nurses.find(n => n.id === p.nurseId);
             document.getElementById('popoverPatientRoomBadge').textContent = `${p.room} (ベッド${p.bedIndex + 1})`;
             document.getElementById('popoverPatientName').textContent = p.name;
-            document.getElementById('popoverPatientAssignedStaff').textContent = nurse ? `担当: ${nurse.name}` : '担当: 未割当';
+            
+            const nurseSelect = document.getElementById('popoverNurseSelect');
+            nurseSelect.innerHTML = '<option value="">(未割当)</option>';
+            nurses.filter(n => n.isWorking !== false && n.role !== 'chief').forEach(n => {
+                nurseSelect.innerHTML += `<option value="${n.id}" ${n.id === p.nurseId ? 'selected' : ''}>${n.name}</option>`;
+            });
+
+            if (p.room === '転入院' || p.room === '転入院枠') {
+                document.getElementById('popoverPlannedBedContainer').classList.remove('hidden');
+                document.getElementById('popoverPlannedBed').value = p.plannedBed || '';
+            } else {
+                document.getElementById('popoverPlannedBedContainer').classList.add('hidden');
+            }
+            
             renderPopoverOptions();
             document.getElementById('floatingPatientPopover').classList.remove('hidden');
         }
         function closeFloatingPopover() { document.getElementById('floatingPatientPopover').classList.add('hidden'); activePopoverPatientId = null; }
         function saveFloatingPopoverSettings() {
             const p = patients.find(p => p.id === activePopoverPatientId);
-            if (p) { p.state = JSON.parse(JSON.stringify(tempState)); renderAll(); showToast('負荷設定を保存しました'); }
+            if (p) { 
+                p.state = JSON.parse(JSON.stringify(tempState)); 
+                p.nurseId = document.getElementById('popoverNurseSelect').value || null;
+                p.plannedBed = document.getElementById('popoverPlannedBed').value.trim();
+                renderAll(); 
+                showToast('設定を保存しました'); 
+            }
             closeFloatingPopover();
         }
         function unassignCurrentPopoverPatient() {
@@ -1539,6 +1637,27 @@
         }
 
         // === STAFF SETTINGS & DAILY TEAM ROSTER ===
+
+        function addChiefFrame() {
+            showChiefFrame = true;
+            renderAll();
+            showToast('チーフ枠を追加しました');
+        }
+
+        function removeChiefFrame() {
+            showCustomConfirm("チーフ枠を削除しますか？\n（割り当てられていたチーフは未割当に戻ります）", () => {
+                showChiefFrame = false;
+                nurses.forEach(n => {
+                    if (n.role === 'chief') {
+                        n.role = 'staff';
+                        if (n.baseTeam && teams.some(t => t.id === n.baseTeam)) n.team = n.baseTeam;
+                        else n.team = 'none';
+                    }
+                });
+                renderAll();
+                showToast('チーフ枠を非表示にしました');
+            });
+        }
 
         function addNewTeam() {
             // まだマップにないチームをBASE_FOUR_TEAMSまたはTEAM_PRESETSから探して追加
@@ -1844,7 +1963,7 @@
 
         function exportData() {
             saveToLocalStorage();
-            const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, savedAt: new Date().toLocaleString('ja-JP') };
+            const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, showChiefFrame, savedAt: new Date().toLocaleString('ja-JP') };
             const dataStr = JSON.stringify(dataObj, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -1875,6 +1994,14 @@
         }
 
         // === ALLOCATION ENGINE (WITH RULES) ===
+        function clearAllAllocations() {
+            showCustomConfirm("すべての患者の担当割り当てを解除しますか？", () => {
+                patients.forEach(p => p.nurseId = null);
+                renderAll();
+                showToast("すべての割り当てをクリアしました");
+            });
+        }
+
         function triggerAutoAllocation() {
             patients.forEach(p => p.nurseId = null); // Reset
             let allocatableNurses = nurses.filter(n => n.role !== 'chief' && n.isWorking !== false); // Exclude chief and off-duty from auto allocation
