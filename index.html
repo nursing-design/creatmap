@@ -26,7 +26,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
         .modal-blur { backdrop-filter: blur(4px); }
         .bed-cell {
-            background-color: #ffffff; min-height: 48px; transition: background-color 0.15s ease; touch-action: none; 
+            background-color: #ffffff; transition: background-color 0.15s ease; touch-action: none; 
         }
         .bed-cell:active { transform: scale(0.98); }
         .drag-clone {
@@ -41,66 +41,64 @@
 <body class="bg-slate-100 text-slate-800 antialiased h-screen flex flex-col overflow-hidden font-sans relative">
 
     <!-- HEADER -->
-    <header class="bg-white border-b border-slate-200 px-3 py-1.5 flex flex-wrap items-center justify-between shadow-xs flex-shrink-0 z-20 gap-2">
-        <div class="flex items-center space-x-3">
+    <header class="bg-white border-b border-slate-200 px-3 py-2 flex flex-wrap items-center justify-between shadow-xs flex-shrink-0 z-20 gap-2">
+        <div class="flex items-center space-x-2">
             <div class="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white text-base shadow-sm">
                 <i class="fa-solid fa-hospital"></i>
             </div>
             <div>
-                <div class="flex items-center space-x-2">
-                    <h1 class="text-sm sm:text-base font-black text-slate-900 tracking-tight">受持配分マップ　Ver.1</h1>
-                </div>
-                <p class="text-[10px] text-slate-500">外周病室 × 中央ステーション構成</p>
+                <h1 class="text-sm sm:text-base font-black text-slate-900 tracking-tight">受持配分マップ Ver.1</h1>
+                <p class="text-[9px] text-slate-500">外周病室 × 中央ステーション構成</p>
             </div>
         </div>
 
         <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
-            <button id="btnViewMap" onclick="switchView('map')" class="px-4 py-1.5 bg-white shadow-sm rounded-lg text-xs font-black text-teal-700 transition">
+            <button id="btnViewMap" onclick="switchView('map')" class="px-3 py-1 bg-white shadow-sm rounded-lg text-xs font-black text-teal-700 transition">
                 <i class="fa-solid fa-map mr-1"></i>マップ
             </button>
-            <button id="btnViewList" onclick="switchView('list')" class="px-4 py-1.5 text-slate-500 hover:text-slate-800 text-xs font-bold rounded-lg transition">
-                <i class="fa-solid fa-list mr-1"></i>リスト一括編集
+            <button id="btnViewList" onclick="switchView('list')" class="px-3 py-1 text-slate-500 hover:text-slate-800 text-xs font-bold rounded-lg transition">
+                <i class="fa-solid fa-list mr-1"></i>リスト
             </button>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-1.5">
             
-            <button onclick="openHelpModal()" class="px-3 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-2xs flex items-center space-x-1.5 active:scale-95 transition">
+            <button onclick="openHelpModal()" class="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-2xs flex items-center space-x-1 active:scale-95 transition">
                 <i class="fa-solid fa-circle-question"></i>
                 <span class="hidden sm:inline">ヘルプ</span>
             </button>
 
             <!-- Settings Hamburger Menu -->
             <div class="relative" id="settingsDropdownContainer">
-                <button onclick="toggleSettingsMenu()" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-2xs flex items-center space-x-2 active:scale-95 transition">
+                <button onclick="toggleSettingsMenu()" class="px-2.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-bold rounded-xl shadow-2xs flex items-center space-x-1 active:scale-95 transition">
                     <i class="fa-solid fa-bars"></i>
-                    <span>設定メニュー</span>
-                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    <span>設定</span>
+                    <i class="fa-solid fa-chevron-down text-[9px]"></i>
                 </button>
-                <div id="settingsDropdown" class="hidden absolute top-full right-0 sm:left-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-200 z-[100] overflow-hidden">
-                    <button onclick="openRulesSettingsModal(); closeSettingsMenu();" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center transition"><i class="fa-solid fa-scale-balanced text-fuchsia-600 w-5"></i>配分ルール設定</button>
-                    <button onclick="openScoringSettingsModal(); closeSettingsMenu();" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center transition border-t border-slate-50"><i class="fa-solid fa-sliders text-amber-600 w-5"></i>負荷点数マスタ</button>
-                    <button onclick="openWardLayoutModal(); closeSettingsMenu();" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center transition border-t border-slate-50"><i class="fa-solid fa-door-open text-indigo-600 w-5"></i>病室・チーム設定</button>
-                    <button onclick="openStaffSettingsModal(); closeSettingsMenu();" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center transition border-t border-slate-50"><i class="fa-solid fa-users-gear text-blue-600 w-5"></i>スタッフ設定</button>
+                <div id="settingsDropdown" class="hidden absolute top-full right-0 sm:left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-200 z-[100] overflow-hidden">
+                    <button onclick="openRulesSettingsModal(); closeSettingsMenu();" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center transition"><i class="fa-solid fa-scale-balanced text-fuchsia-600 w-5"></i>配分ルール設定</button>
+                    <button onclick="openScoringSettingsModal(); closeSettingsMenu();" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center transition border-t border-slate-50"><i class="fa-solid fa-sliders text-amber-600 w-5"></i>負荷点数マスタ</button>
+                    <button onclick="openWardLayoutModal(); closeSettingsMenu();" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center transition border-t border-slate-50"><i class="fa-solid fa-door-open text-indigo-600 w-5"></i>病室配置設定</button>
+                    <button onclick="openStaffSettingsModal(); closeSettingsMenu();" class="w-full text-left px-3 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center transition border-t border-slate-50"><i class="fa-solid fa-users-gear text-blue-600 w-5"></i>スタッフ設定</button>
                 </div>
             </div>
             
-            <div class="h-6 w-px bg-slate-300 mx-1"></div>
+            <div class="h-5 w-px bg-slate-300 mx-0.5"></div>
 
-            <button onclick="exportData()" class="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-md flex items-center space-x-1.5 active:scale-95 transition">
+            <button onclick="exportData()" class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-md flex items-center space-x-1 active:scale-95 transition">
                 <i class="fa-solid fa-download"></i>
                 <span class="hidden lg:inline">保存</span>
             </button>
-            <label class="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-md flex items-center space-x-1.5 active:scale-95 transition cursor-pointer">
+            <label class="px-2.5 py-1.5 bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-md flex items-center space-x-1 active:scale-95 transition cursor-pointer">
                 <i class="fa-solid fa-upload"></i>
                 <span class="hidden lg:inline">読込</span>
                 <input type="file" onchange="importData(event)" accept=".json" class="hidden">
             </label>
-            <button onclick="clearAllAllocations()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold rounded-xl shadow-sm flex items-center space-x-1.5 active:scale-95 transition">
+            <button onclick="clearAllAllocations()" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold rounded-xl shadow-sm flex items-center space-x-1 active:scale-95 transition">
                 <i class="fa-solid fa-eraser"></i>
-                <span class="hidden lg:inline">割当クリア</span>
+                <span>割当クリア</span>
             </button>
-            <button onclick="triggerAutoAllocation()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-black rounded-xl shadow-md shadow-teal-600/20 flex items-center space-x-1.5 active:scale-95 transition">
+            <button onclick="triggerAutoAllocation()" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-black rounded-xl shadow-md shadow-teal-600/20 flex items-center space-x-1 active:scale-95 transition">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <span>自動配分</span>
             </button>
@@ -108,8 +106,8 @@
     </header>
 
     <!-- STATUS BAR -->
-    <section class="bg-white border-b border-slate-200 px-4 py-1.5 flex flex-wrap items-center justify-between text-xs gap-2 flex-shrink-0 z-10">
-        <div class="flex items-center space-x-4">
+    <section class="bg-white border-b border-slate-200 px-3 py-1 flex flex-wrap items-center justify-between text-[11px] gap-2 flex-shrink-0 z-10">
+        <div class="flex items-center space-x-3">
             <div class="flex items-center space-x-1">
                 <span class="text-slate-500">総患者:</span>
                 <span id="statTotalPatients" class="font-extrabold text-slate-900">0名</span>
@@ -119,80 +117,80 @@
                 <span id="statUnassignedPatients" class="font-black text-rose-600">0名</span>
             </div>
             <div class="flex items-center space-x-1">
-                <span class="text-slate-500">総負荷点数:</span>
+                <span class="text-slate-500">総負荷:</span>
                 <span id="statTotalPoints" class="font-extrabold text-teal-700">0 pt</span>
             </div>
         </div>
         <div class="flex items-center space-x-2" id="mapGuideBadge">
-            <span class="text-slate-500 text-[11px]">操作:</span>
-            <span id="currentModeBadge" class="bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded-lg text-[11px] font-bold flex items-center space-x-1">
+            <span class="text-slate-500 text-[10px]">操作:</span>
+            <span id="currentModeBadge" class="bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center space-x-1">
                 <i class="fa-solid fa-hand-pointer text-teal-600"></i>
                 <span>ベッドタップで設定 / ドラッグ＆ドロップで移動</span>
             </span>
-            <button onclick="clearActivePaintStaff()" id="btnClearActiveStaff" class="text-[11px] px-2 py-0.5 rounded-md border border-rose-300 bg-rose-50 text-rose-700 font-bold transition hidden">
+            <button onclick="clearActivePaintStaff()" id="btnClearActiveStaff" class="text-[10px] px-2 py-0.5 rounded-md border border-rose-300 bg-rose-50 text-rose-700 font-bold transition hidden">
                 割当解除
             </button>
         </div>
     </section>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-1 overflow-auto p-2 sm:p-4 bg-slate-200/80 flex flex-col relative" id="mainScrollArea">
+    <main class="flex-1 overflow-auto p-2 sm:p-3 bg-slate-200/80 flex flex-col relative" id="mainScrollArea">
         
         <!-- MAP VIEW -->
-        <div id="mapViewContainer" class="w-full mx-auto bg-white border border-slate-300 rounded-xl shadow-md p-2 sm:p-3 flex flex-col min-w-[1000px] overflow-x-auto relative">
+        <div id="mapViewContainer" class="w-full mx-auto bg-white border border-slate-300 rounded-xl shadow-md p-2 flex flex-col min-w-[900px] overflow-x-auto relative">
             
             <!-- TOP ROOMS -->
-            <div id="topRoomsContainer" class="flex flex-row justify-center space-x-4 mb-3"></div>
+            <div id="topRoomsContainer" class="flex flex-row justify-center space-x-3 mb-2"></div>
 
             <!-- MIDDLE (Left + Station + Right) -->
             <div class="flex flex-row items-stretch justify-between">
                 <!-- LEFT ROOMS -->
-                <div id="leftRoomsContainer" class="flex flex-col space-y-3 w-[200px] flex-shrink-0 justify-center"></div>
+                <div id="leftRoomsContainer" class="flex flex-col space-y-2 w-[160px] flex-shrink-0 justify-center"></div>
 
                 <!-- CENTER STATION -->
-                <div class="flex-1 mx-3 sm:mx-4 flex flex-col items-center justify-center relative min-w-[450px]">
-                    <div class="w-full h-full border-2 border-dashed border-slate-300 bg-slate-50 rounded-3xl p-2 sm:p-3 flex flex-col items-center shadow-inner relative">
-                        <div class="absolute -top-3 bg-slate-700 text-white px-3 py-1 rounded-full text-[11px] font-black shadow-sm flex items-center space-x-1.5">
+                <div class="flex-1 mx-4 sm:mx-6 flex flex-col items-center justify-center relative min-w-[500px]">
+                    <div class="w-full h-full border-2 border-dashed border-slate-300 bg-slate-50 rounded-3xl p-3 sm:p-4 flex flex-col items-center shadow-inner relative gap-3">
+                        <div class="absolute -top-3 bg-slate-700 text-white px-4 py-1 rounded-full text-xs font-black shadow-sm flex items-center space-x-1.5">
                             <i class="fa-solid fa-user-nurse"></i>
                             <span>中央ステーション (受持看護師)</span>
                         </div>
-                        <!-- BUTTONS: Chief Add & Team Add -->
-                        <div class="absolute top-2 right-2 flex space-x-2 z-10">
-                            <button id="btnAdChiefFrame" onclick="addChiefFrame()" class="hidden px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg shadow-md flex items-center space-x-1 text-[10px] font-bold transition active:scale-95" title="チーフ枠を追加">
-                                <i class="fa-solid fa-plus text-[9px]"></i>
-                                <span>チーフ枠</span>
-                            </button>
-                            <button onclick="addNewTeam()" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md flex items-center space-x-1 text-[10px] font-bold transition active:scale-95" title="本日の稼働チームを追加">
-                                <i class="fa-solid fa-plus text-[9px]"></i>
-                                <span>チーム</span>
+                        
+                        <div class="absolute top-3 right-3 z-10">
+                            <button onclick="addNewTeam()" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md flex items-center space-x-1 text-[11px] font-bold transition active:scale-95" title="本日の稼働チームを追加">
+                                <i class="fa-solid fa-plus text-[10px]"></i><span>チーム</span>
                             </button>
                         </div>
 
-                        <div id="centerNurseGrid" class="w-full flex flex-col items-center mt-4 space-y-2">
-                            <!-- Chief Row & Admission Room Row -->
-                            <div id="chiefRow" class="flex flex-row items-stretch justify-center space-x-2 w-full"></div>
+                        <div id="centerNurseGrid" class="w-full flex flex-col items-center mt-3 space-y-4">
+                            <!-- Top Row: Chief & Transfer -->
+                            <div class="flex flex-row justify-center items-start gap-4 w-full" id="topStationRow">
+                                <div id="chiefContainer"></div>
+                                <div id="transferContainer"></div>
+                            </div>
+                            
                             <!-- Teams Row -->
-                            <div id="teamsRow" class="flex flex-col space-y-2 w-full items-center"></div>
+                            <div id="teamsContainer" class="flex flex-col space-y-4 w-full items-center"></div>
                         </div>
+
                     </div>
                 </div>
 
                 <!-- RIGHT ROOMS -->
-                <div id="rightRoomsContainer" class="flex flex-col space-y-3 w-[200px] flex-shrink-0 justify-center"></div>
+                <div id="rightRoomsContainer" class="flex flex-col space-y-2 w-[160px] flex-shrink-0 justify-center"></div>
             </div>
 
             <!-- BOTTOM ROOMS -->
-            <div id="bottomRoomsContainer" class="flex flex-row justify-center space-x-4 mt-3"></div>
+            <div id="bottomRoomsContainer" class="flex flex-row justify-center space-x-3 mt-2"></div>
         </div>
 
         <!-- LIST VIEW -->
         <div id="listViewContainer" class="hidden w-full mx-auto bg-white border border-slate-300 rounded-xl shadow-md flex-col flex-1 overflow-hidden">
-            <div class="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex justify-between items-center">
-                <span class="font-black text-sm text-slate-800"><i class="fa-solid fa-table-list text-teal-600 mr-2"></i>患者一覧・負荷一括編集</span>
-                <span class="text-xs text-slate-500">変更は自動的に保存・点数計算されます</span>
+            <div class="bg-slate-50 border-b border-slate-200 px-3 py-2 flex justify-between items-center">
+                <span class="font-black text-xs text-slate-800"><i class="fa-solid fa-table-list text-teal-600 mr-1.5"></i>患者一覧・負荷一括編集</span>
+                <span class="text-[10px] text-slate-500">変更は自動的に保存・点数計算されます</span>
             </div>
             <div class="flex-1 overflow-auto">
-                <table class="w-full text-left text-xs whitespace-nowrap min-w-[1000px]">
+                <table class="w-full text-left text-xs whitespace-nowrap min-w-[900px]">
                     <thead class="bg-slate-100 text-slate-700 sticky top-0 z-10 shadow-sm border-b border-slate-200">
                         <tr id="listViewTableHeader"></tr>
                     </thead>
@@ -205,37 +203,34 @@
     <!-- Allocation Rules Settings Modal -->
     <div id="rulesSettingsModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
         <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-fuchsia-900 text-white p-4 flex items-center justify-between">
+            <div class="bg-fuchsia-900 text-white p-3 flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-base"><i class="fa-solid fa-scale-balanced text-fuchsia-300 mr-2"></i>基本ルールの設定 (自動配分エンジン)</h3>
-                    <p class="text-[11px] text-fuchsia-200 mt-0.5">自動配分アルゴリズムの優先事項や禁止事項を設定します。</p>
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-scale-balanced text-fuchsia-300 mr-1.5"></i>基本ルールの設定 (自動配分エンジン)</h3>
                 </div>
-                <button onclick="closeRulesSettingsModal()" class="w-8 h-8 rounded-full bg-fuchsia-800 hover:bg-fuchsia-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeRulesSettingsModal()" class="w-7 h-7 rounded-full bg-fuchsia-800 hover:bg-fuchsia-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-5 overflow-y-auto flex-1 bg-slate-50 space-y-5">
+            <div class="p-4 overflow-y-auto flex-1 bg-slate-50 space-y-4">
                 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <label class="block text-sm font-bold text-slate-800 mb-1">配分の最優先事項</label>
-                    <p class="text-[11px] text-slate-500 mb-2">負荷点数を均等にするか、受け持つ患者の人数を均等にするかを選択します。</p>
-                    <select id="ruleBalancePriority" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">配分の最優先事項</label>
+                    <select id="ruleBalancePriority" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
                         <option value="workload">負荷点数の均等化を優先する (推奨)</option>
                         <option value="headcount">受け持ち人数の均等化を優先する</option>
                     </select>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <label class="block text-sm font-bold text-slate-800 mb-1">部屋割り当て戦略（部屋持ちルール）</label>
-                    <p class="text-[11px] text-slate-500 mb-2">複数人部屋において、1人の看護師が複数の患者を受け持つことをどう扱うか設定します。</p>
-                    <select id="ruleRoomStrategy" onchange="toggleMaxPatientsPerRoomContainer()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">部屋割り当て戦略（部屋持ちルール）</label>
+                    <select id="ruleRoomStrategy" onchange="toggleMaxPatientsPerRoomContainer()" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
                         <option value="prevent">【部屋持ち制限】 1部屋の最大受持人数を制限する（リスク分散）</option>
                         <option value="encourage">【部屋持ち推奨】 同じ部屋の患者を優先して割り当てる（動線短縮）</option>
                         <option value="neutral">特に考慮しない（負荷とチームのみで判断）</option>
                     </select>
-                    <div id="maxPatientsPerRoomContainer" class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-700">1部屋あたりの最大受持人数（同一スタッフ）:</span>
+                    <div id="maxPatientsPerRoomContainer" class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">1部屋あたりの最大受持人数:</span>
                         <div class="flex items-center space-x-1.5">
-                            <span class="text-xs text-slate-500">最大</span>
-                            <select id="ruleMaxPatientsPerRoom" class="border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-black bg-white text-fuchsia-900 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                            <span class="text-[10px] text-slate-500">最大</span>
+                            <select id="ruleMaxPatientsPerRoom" class="border border-slate-300 rounded-lg px-2 py-1 text-xs font-black bg-white text-fuchsia-900 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
                                 <option value="1">1名まで</option>
                                 <option value="2">2名まで</option>
                                 <option value="3">3名まで</option>
@@ -246,85 +241,76 @@
                     </div>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <label class="block text-sm font-bold text-slate-800 mb-1">チームカラー優先度</label>
-                    <p class="text-[11px] text-slate-500 mb-2">患者の所属チームと異なるチームの看護師への割り当てをどの程度防ぐか設定します。</p>
-                    <select id="ruleTeamPriority" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">チームカラー優先度</label>
+                    <select id="ruleTeamPriority" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
                         <option value="high">【強】 チーム外への割り当てを極力防ぐ</option>
                         <option value="normal">【標準】 基本はチーム内だが、負荷超過時はチーム外も許容</option>
                     </select>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <label class="block text-sm font-bold text-slate-800 mb-1">共有部屋（チームカラーなし）の扱い</label>
-                    <p class="text-[11px] text-slate-500 mb-2">チームが設定されていない共用部屋の患者をどう配分するか設定します。</p>
-                    <select id="ruleSharedRoom" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <label class="block text-xs font-bold text-slate-800 mb-1">共有部屋（チームカラーなし）の扱い</label>
+                    <select id="ruleSharedRoom" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
                         <option value="standard">全体のバランス（負荷・人数）に含めて配分</option>
                         <option value="low_workload">負荷が最も低いスタッフに優先的に割り当てる</option>
                     </select>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-amber-500">
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-amber-500">
                     <label class="flex items-center justify-between cursor-pointer">
                         <div>
-                            <span class="block text-sm font-bold text-slate-800">新人・キャパ低めスタッフの保護</span>
-                            <span class="block text-[11px] text-slate-500 mt-1">キャパシティ設定が「低め」のスタッフには、負荷点数が高い（6pt以上）の重症患者を自動で割り当てないように制限します。</span>
+                            <span class="block text-xs font-bold text-slate-800">新人・キャパ低めスタッフの保護</span>
+                            <span class="block text-[10px] text-slate-500 mt-0.5">キャパシティ設定が「低め」のスタッフには重症患者を自動で割り当てない</span>
                         </div>
-                        <input type="checkbox" id="ruleProtectLowCap" class="w-5 h-5 accent-fuchsia-600 rounded">
+                        <input type="checkbox" id="ruleProtectLowCap" class="w-4 h-4 accent-fuchsia-600 rounded">
                     </label>
                 </div>
 
             </div>
-            <div class="p-3 border-t bg-white flex justify-end">
-                <button onclick="saveRulesSettings()" class="px-5 py-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold text-xs rounded-xl shadow-md transition">設定を保存</button>
+            <div class="p-2.5 border-t bg-white flex justify-end">
+                <button onclick="saveRulesSettings()" class="px-4 py-1.5 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold text-xs rounded-xl shadow-md transition">設定を保存</button>
             </div>
         </div>
     </div>
 
     <!-- Floating Acuity Popover (Map View Only) -->
     <div id="floatingPatientPopover" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]">
-            <div class="bg-slate-900 text-white p-3.5 flex items-center justify-between">
-                <div class="flex items-center space-x-2.5">
-                    <span id="popoverPatientRoomBadge" class="px-2.5 py-1 rounded-lg bg-teal-500 font-black text-sm"></span>
+        <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]">
+            <div class="bg-slate-900 text-white p-3 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span id="popoverPatientRoomBadge" class="px-2 py-0.5 rounded-md bg-teal-500 font-black text-xs"></span>
                     <div>
-                        <h3 id="popoverPatientName" class="font-extrabold text-base"></h3>
-                        <span id="popoverPatientAssignedStaff" class="text-[11px] text-teal-300 block font-bold hidden"></span>
+                        <h3 id="popoverPatientName" class="font-extrabold text-sm"></h3>
+                        <span id="popoverPatientAssignedStaff" class="text-[10px] text-teal-300 block font-bold"></span>
                     </div>
                 </div>
-                <button onclick="closeFloatingPopover()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center">
+                <button onclick="closeFloatingPopover()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            
-            <!-- NEW: Assignment & Planned Bed Editor -->
-            <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-wrap gap-3">
-                <div class="flex-1 min-w-[140px]">
-                    <label class="block text-[10px] font-bold text-slate-500 mb-1">担当看護師 (受持)</label>
-                    <select id="popoverNurseSelect" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm"></select>
-                </div>
-                <div class="flex-1 min-w-[140px] hidden" id="popoverPlannedBedContainer">
-                    <label class="block text-[10px] font-bold text-slate-500 mb-1">予定ベッド (転入・移動先)</label>
-                    <input type="text" id="popoverPlannedBed" placeholder="例: 201-1" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-teal-500 shadow-sm">
-                </div>
+            <!-- Planned Bed Section -->
+            <div id="popoverPlannedBedContainer" class="bg-amber-50 border-b border-amber-200 px-3 py-2 hidden items-center justify-between">
+                <span class="text-xs font-bold text-amber-900 flex items-center"><i class="fa-solid fa-arrow-right-to-bracket mr-1.5"></i>予定ベッド:</span>
+                <input type="text" id="popoverPlannedBedInput" placeholder="例: 201-1" class="w-32 border border-amber-300 rounded px-2 py-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white">
             </div>
-
-            <div class="bg-teal-50 border-b border-teal-200 px-4 py-2 flex items-center justify-between">
-                <span class="text-xs font-bold text-teal-900">臨床状態の負荷を選択</span>
+            <div class="bg-teal-50 border-b border-teal-200 px-3 py-1.5 flex items-center justify-between">
+                <span class="text-[11px] font-bold text-teal-900">臨床状態の負荷を選択</span>
                 <div class="flex items-center space-x-1">
-                    <span class="text-xs font-bold text-teal-700">合計:</span>
-                    <span id="popoverCalculatedScore" class="text-lg font-black text-teal-900">0</span>
-                    <span class="text-xs font-bold text-teal-800">pt</span>
+                    <span class="text-[11px] font-bold text-teal-700">合計:</span>
+                    <span id="popoverCalculatedScore" class="text-base font-black text-teal-900">0</span>
+                    <span class="text-[10px] font-bold text-teal-800">pt</span>
                 </div>
             </div>
-            <div class="p-3.5 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2" id="popoverOptionsContainer"></div>
-            <div class="p-3 border-t bg-slate-50 flex items-center justify-between">
-                <div class="flex space-x-2">
-                    <button onclick="requestPatientDeletion()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg transition shadow-sm"><i class="fa-solid fa-trash-can mr-1"></i>患者削除</button>
+            <div class="p-3 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2" id="popoverOptionsContainer"></div>
+            <div class="p-2.5 border-t bg-slate-50 flex items-center justify-between">
+                <div class="flex space-x-1.5">
+                    <button onclick="requestPatientDeletion()" class="px-2.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] rounded-lg transition shadow-sm"><i class="fa-solid fa-trash-can mr-1"></i>患者削除</button>
+                    <button onclick="unassignCurrentPopoverPatient()" class="px-2.5 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-[11px] rounded-lg transition">受持を解除</button>
                 </div>
-                <div class="flex space-x-2">
-                    <button onclick="closeFloatingPopover()" class="px-4 py-2 text-slate-600 font-bold text-xs">キャンセル</button>
-                    <button onclick="saveFloatingPopoverSettings()" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md">保存</button>
+                <div class="flex space-x-1.5">
+                    <button onclick="closeFloatingPopover()" class="px-3 py-1.5 text-slate-600 font-bold text-[11px]">キャンセル</button>
+                    <button onclick="saveFloatingPopoverSettings()" class="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-[11px] rounded-xl shadow-md">保存</button>
                 </div>
             </div>
         </div>
@@ -332,84 +318,82 @@
 
     <!-- Scoring Settings Modal -->
     <div id="scoringSettingsModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-amber-900 text-white p-4 flex items-center justify-between">
+        <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-amber-900 text-white p-3 flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-base"><i class="fa-solid fa-sliders text-amber-300 mr-2"></i>負荷点数マスタ編集 (フルカスタマイズ)</h3>
-                    <p class="text-[11px] text-amber-200 mt-0.5">項目自体の追加・削除や、選択肢名と点数を自由に編集できます。</p>
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-sliders text-amber-300 mr-1.5"></i>負荷点数マスタ編集</h3>
                 </div>
-                <button onclick="closeScoringSettingsModal()" class="w-8 h-8 rounded-full bg-amber-800 hover:bg-amber-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeScoringSettingsModal()" class="w-7 h-7 rounded-full bg-amber-800 hover:bg-amber-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-4 overflow-y-auto flex-1 bg-slate-100">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-sm font-bold text-slate-800">評価項目一覧</span>
-                    <button onclick="addWorkloadItem()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm">
+            <div class="p-3 overflow-y-auto flex-1 bg-slate-100">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold text-slate-800">評価項目一覧</span>
+                    <button onclick="addWorkloadItem()" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold rounded-lg shadow-sm">
                         <i class="fa-solid fa-plus mr-1"></i>新規項目を追加
                     </button>
                 </div>
-                <div id="scoringEditContainer" class="space-y-4"></div>
+                <div id="scoringEditContainer" class="space-y-3"></div>
             </div>
-            <div class="p-3 border-t bg-white flex justify-end">
-                <button onclick="closeScoringSettingsModal()" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md">完了・保存</button>
+            <div class="p-2.5 border-t bg-white flex justify-end">
+                <button onclick="closeScoringSettingsModal()" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md">完了・保存</button>
             </div>
         </div>
     </div>
 
-    <!-- Ward Layout Modal -->
+    <!-- Ward Layout Modal (Excluding 転入院) -->
     <div id="wardLayoutModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-            <div class="bg-indigo-900 text-white p-4 flex items-center justify-between">
+        <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="bg-indigo-900 text-white p-3 flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-base"><i class="fa-solid fa-door-open text-indigo-300 mr-2"></i>病室・チーム配置設定</h3>
-                    <p class="text-xs text-indigo-200 mt-0.5">病室の位置、ベッド数、および担当チームカラーを設定します</p>
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-door-open text-indigo-300 mr-1.5"></i>病室配置設定</h3>
                 </div>
-                <button onclick="closeWardLayoutModal()" class="w-8 h-8 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeWardLayoutModal()" class="w-7 h-7 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-4 overflow-y-auto flex-1 space-y-4">
-                <div class="flex justify-between items-center pb-2 border-b">
-                    <span class="text-xs font-bold text-slate-700">現在の病室一覧</span>
-                    <button onclick="addNewRoom()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-sm">
+            <div class="p-3 overflow-y-auto flex-1 space-y-3">
+                <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                    <span class="text-xs font-bold text-slate-700">病室一覧（※転入院枠は常に表示されます）</span>
+                    <button onclick="addNewRoom()" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-lg shadow-sm">
                         <i class="fa-solid fa-plus mr-1"></i>部屋を追加
                     </button>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs whitespace-nowrap min-w-[600px]">
+                    <table class="w-full text-left text-xs whitespace-nowrap min-w-[500px]">
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 border-b">
-                                <th class="p-2">部屋番号</th>
-                                <th class="p-2">マップ位置</th>
-                                <th class="p-2">ベッド数</th>
-                                <th class="p-2">チームカラー</th>
-                                <th class="p-2 text-right">削除</th>
+                                <th class="p-1.5">部屋番号</th>
+                                <th class="p-1.5">マップ位置</th>
+                                <th class="p-1.5">ベッド数</th>
+                                <th class="p-1.5">チームカラー</th>
+                                <th class="p-1.5 text-right">削除</th>
                             </tr>
                         </thead>
                         <tbody id="roomsTableBody"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="p-3 border-t bg-slate-50 flex justify-end">
-                <button onclick="closeWardLayoutModal()" class="px-5 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-bold text-xs rounded-xl shadow">完了</button>
+            <div class="p-2.5 border-t bg-slate-50 flex justify-end">
+                <button onclick="closeWardLayoutModal()" class="px-4 py-1.5 bg-indigo-700 hover:bg-indigo-800 text-white font-bold text-xs rounded-xl shadow">完了</button>
             </div>
         </div>
     </div>
 
     <!-- Team Roster Modal -->
     <div id="teamRosterModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-indigo-900 text-white p-4 flex items-center justify-between">
-                <h3 class="font-bold text-base" id="teamRosterModalTitle">チームメンバー選択</h3>
-                <button onclick="closeTeamRosterModal()" class="w-8 h-8 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-indigo-900 text-white p-3 flex items-center justify-between">
+                <h3 class="font-bold text-sm" id="teamRosterModalTitle">チームメンバー選択</h3>
+                <button onclick="closeTeamRosterModal()" class="w-7 h-7 rounded-full bg-indigo-800 hover:bg-indigo-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-4 overflow-y-auto flex-1 bg-slate-50 space-y-4">
-                <div id="teamRosterList" class="space-y-2"></div>
+            <div class="p-3 overflow-y-auto flex-1 bg-slate-50 space-y-3">
+                <div id="teamRosterList" class="space-y-1.5"></div>
             </div>
-            <div class="p-3 border-t bg-white flex items-center justify-between">
-                <button id="btnDeleteActiveTeam" onclick="deleteActiveTeamFromModal()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs rounded-xl transition flex items-center">
-                    <i class="fa-solid fa-trash-can mr-1.5"></i>このチームを削除
+            <div class="p-2.5 border-t bg-white flex items-center justify-between">
+                <button id="btnDeleteActiveTeam" onclick="deleteActiveTeamFromModal()" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-[10px] rounded-lg transition flex items-center">
+                    <i class="fa-solid fa-trash-can mr-1"></i>この枠を削除
                 </button>
-                <div class="flex space-x-2 ml-auto">
-                    <button onclick="closeTeamRosterModal()" class="px-4 py-2 text-slate-500 font-bold text-xs">キャンセル</button>
-                    <button id="btnSaveTeamRoster" onclick="saveTeamRoster()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition">決定</button>
+                <div class="flex space-x-1.5 ml-auto">
+                    <button onclick="closeTeamRosterModal()" class="px-3 py-1.5 text-slate-500 font-bold text-xs">キャンセル</button>
+                    <button id="btnSaveTeamRoster" onclick="saveTeamRoster()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition">決定</button>
                 </div>
             </div>
         </div>
@@ -417,81 +401,80 @@
 
     <!-- Staff Settings Modal -->
     <div id="staffSettingsModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-2xl w-full max-w-6xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
-            <div class="bg-blue-900 text-white p-4 flex items-center justify-between">
+        <div class="bg-white rounded-2xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="bg-blue-900 text-white p-3 flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-base"><i class="fa-solid fa-users-gear text-blue-300 mr-2"></i>スタッフ設定</h3>
-                    <p class="text-xs text-blue-200 mt-0.5">スタッフのチーム所属、個人カラー、役割（チーフ・リーダー・スタッフ）、入院対応可否、負荷設定を行います</p>
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-users-gear text-blue-300 mr-1.5"></i>スタッフ設定</h3>
                 </div>
-                <button onclick="closeStaffSettingsModal()" class="w-8 h-8 rounded-full bg-blue-800 hover:bg-blue-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeStaffSettingsModal()" class="w-7 h-7 rounded-full bg-blue-800 hover:bg-blue-700 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-4 overflow-y-auto flex-1 space-y-4">
-                <div class="flex justify-between items-center pb-2 border-b">
+            <div class="p-3 overflow-y-auto flex-1 space-y-3">
+                <div class="flex justify-between items-center pb-2 border-b border-slate-100">
                     <span class="text-xs font-bold text-slate-700">出勤スタッフ一覧</span>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="exportStaffCsv()" class="px-3 py-1.5 bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold rounded-lg shadow-sm transition">
+                    <div class="flex items-center space-x-1.5">
+                        <button onclick="exportStaffCsv()" class="px-2.5 py-1 bg-slate-600 hover:bg-slate-700 text-white text-[10px] font-bold rounded-lg shadow-sm transition">
                             <i class="fa-solid fa-download mr-1"></i>CSV出力
                         </button>
-                        <label class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm transition cursor-pointer">
+                        <label class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg shadow-sm transition cursor-pointer">
                             <i class="fa-solid fa-upload mr-1"></i>CSV読込
                             <input type="file" onchange="importStaffCsv(event)" accept=".csv" class="hidden">
                         </label>
-                        <button onclick="addNewStaff()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-sm">
-                            <i class="fa-solid fa-user-plus mr-1"></i>スタッフを追加
+                        <button onclick="addNewStaff()" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-sm">
+                            <i class="fa-solid fa-user-plus mr-1"></i>追加
                         </button>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs whitespace-nowrap min-w-[800px]">
+                    <table class="w-full text-left text-xs whitespace-nowrap min-w-[700px]">
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 border-b">
-                                <th class="p-2">スタッフ名</th>
-                                <th class="p-2 text-center">出勤</th>
-                                <th class="p-2">チームカラー</th>
-                                <th class="p-2 text-center">入院対応</th>
-                                <th class="p-2">負荷上限</th>
-                                <th class="p-2 text-right">削除</th>
+                                <th class="p-1.5">スタッフ名</th>
+                                <th class="p-1.5 text-center">出勤</th>
+                                <th class="p-1.5">チーム所属 (図形)</th>
+                                <th class="p-1.5 text-center">入院対応</th>
+                                <th class="p-1.5">負荷上限</th>
+                                <th class="p-1.5 text-right">削除</th>
                             </tr>
                         </thead>
                         <tbody id="staffTableBody"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="p-3 border-t bg-slate-50 flex justify-end">
-                <button onclick="closeStaffSettingsModal()" class="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs rounded-xl shadow">完了</button>
+            <div class="p-2.5 border-t bg-slate-50 flex justify-end">
+                <button onclick="closeStaffSettingsModal()" class="px-4 py-1.5 bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs rounded-xl shadow">完了</button>
             </div>
         </div>
     </div>
 
     <!-- Custom Dialog Modal -->
-    <div id="customDialogModal" class="fixed inset-0 bg-black/60 modal-blur z-[9999] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col scale-100 transform transition-all">
-            <div id="customDialogHeader" class="bg-slate-900 text-white p-3 font-bold text-sm">お知らせ</div>
-            <div id="customDialogMessage" class="p-4 text-sm text-slate-700 leading-relaxed font-medium"></div>
-            <div id="customDialogInputContainer" class="px-4 pb-4 hidden">
-                <input type="text" id="customDialogInput" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring focus:ring-teal-500 outline-none">
+    <div id="customDialogModal" class="fixed inset-0 bg-black/60 modal-blur z-[9999] hidden flex items-center justify-center p-3">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl overflow-hidden flex flex-col scale-100 transform transition-all">
+            <div id="customDialogHeader" class="bg-slate-900 text-white p-2.5 font-bold text-xs">お知らせ</div>
+            <div id="customDialogMessage" class="p-4 text-xs text-slate-700 leading-relaxed font-medium"></div>
+            <div id="customDialogInputContainer" class="px-4 pb-3 hidden">
+                <input type="text" id="customDialogInput" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-xs focus:ring focus:ring-teal-500 outline-none">
             </div>
-            <div class="p-3 border-t border-slate-100 bg-slate-50 flex justify-end space-x-2" id="customDialogButtons"></div>
+            <div class="p-2.5 border-t border-slate-100 bg-slate-50 flex justify-end space-x-1.5" id="customDialogButtons"></div>
         </div>
     </div>
 
-    <!-- Room Edit Modal (New) -->
+    <!-- Room Edit Modal -->
     <div id="roomEditModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden flex flex-col">
-            <div class="bg-teal-700 text-white p-4 flex items-center justify-between">
+        <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl overflow-hidden flex flex-col">
+            <div class="bg-teal-700 text-white p-3 flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-base"><i class="fa-solid fa-bed text-teal-200 mr-2"></i>部屋の設定</h3>
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-bed text-teal-200 mr-1.5"></i>部屋の設定</h3>
                 </div>
-                <button onclick="closeRoomEditModal()" class="w-8 h-8 rounded-full bg-teal-600 hover:bg-teal-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeRoomEditModal()" class="w-7 h-7 rounded-full bg-teal-600 hover:bg-teal-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-5 space-y-4 bg-slate-50">
+            <div class="p-4 space-y-3 bg-slate-50">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">部屋番号・名称</label>
-                    <input type="text" id="editRoomNumber" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">部屋番号・名称</label>
+                    <input type="text" id="editRoomNumber" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">ベッド数（定員）</label>
-                    <select id="editRoomCapacity" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">ベッド数（定員）</label>
+                    <select id="editRoomCapacity" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
                         <option value="1">1床</option>
                         <option value="2">2床</option>
                         <option value="4">4床</option>
@@ -499,59 +482,59 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">担当チームカラー</label>
-                    <select id="editRoomTeam" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">担当チーム</label>
+                    <select id="editRoomTeam" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white">
                     </select>
                 </div>
             </div>
-            <div class="p-3 border-t bg-white flex justify-end space-x-2">
-                <button onclick="closeRoomEditModal()" class="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-xl font-bold text-xs transition">キャンセル</button>
-                <button onclick="saveRoomEdit()" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition">保存</button>
+            <div class="p-2.5 border-t bg-white flex justify-end space-x-1.5">
+                <button onclick="closeRoomEditModal()" class="px-3 py-1.5 text-slate-500 hover:bg-slate-100 rounded-xl font-bold text-[11px] transition">キャンセル</button>
+                <button onclick="saveRoomEdit()" class="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-[11px] rounded-xl shadow-md transition">保存</button>
             </div>
         </div>
     </div>
 
     <!-- Help Modal -->
     <div id="helpModal" class="fixed inset-0 bg-black/40 modal-blur z-50 hidden flex items-center justify-center p-3">
-        <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-slate-800 text-white p-4 flex items-center justify-between">
+        <div class="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-800 text-white p-3 flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-base"><i class="fa-solid fa-circle-question text-sky-400 mr-2"></i>使用方法（ヘルプ）</h3>
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-circle-question text-sky-400 mr-1.5"></i>使用方法（ヘルプ）</h3>
                 </div>
-                <button onclick="closeHelpModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeHelpModal()" class="w-7 h-7 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-5 overflow-y-auto flex-1 bg-slate-50 space-y-5 text-sm text-slate-700">
+            <div class="p-4 overflow-y-auto flex-1 bg-slate-50 space-y-4 text-xs text-slate-700">
                 
                 <section>
-                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-map text-teal-600 mr-1.5"></i>マップ画面の基本操作</h4>
-                    <ul class="list-disc list-inside space-y-1 ml-1 text-xs sm:text-sm">
+                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-1.5"><i class="fa-solid fa-map text-teal-600 mr-1.5"></i>マップ画面の基本操作</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-[11px] sm:text-xs">
                         <li><strong>患者の登録:</strong> 「空床」をタップすると、新しい患者を登録できます。</li>
                         <li><strong>担当の割り当て:</strong> 中央のスタッフアイコンをタップして「割当モード」にし、患者のベッドをタップすると担当に設定されます。</li>
                         <li><strong>患者の移動:</strong> 患者のベッドをドラッグ＆ドロップすると、別のベッドへ移動（または入れ替え）できます。</li>
-                        <li><strong>患者情報の編集:</strong> スタッフが選択されていない状態で患者をタップすると、負荷点数や担当の解除、患者の削除ができます。</li>
+                        <li><strong>患者情報の編集:</strong> スタッフが選択されていない状態で患者をタップすると、負荷点数や担当の解除、予定ベッドの入力、患者の削除ができます。</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>自動配分とルール設定</h4>
-                    <ul class="list-disc list-inside space-y-1 ml-1 text-xs sm:text-sm">
+                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-1.5"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>自動配分とルール設定</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-[11px] sm:text-xs">
                         <li>右上の「自動配分」ボタンを押すと、現在の患者の負荷点数や基本ルールに基づいて、アルゴリズムが自動的に担当を割り当てます。</li>
-                        <li>「設定メニュー」＞「配分ルール設定」から、負荷優先か人数優先か、部屋持ちの制限などのルールを変更できます。</li>
+                        <li>「設定」＞「配分ルール設定」から、負荷優先か人数優先か、部屋持ちの制限などのルールを変更できます。</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-users-gear text-blue-600 mr-1.5"></i>チームとスタッフの管理</h4>
-                    <ul class="list-disc list-inside space-y-1 ml-1 text-xs sm:text-sm">
-                        <li><strong>本日のメンバー:</strong> マップ中央の各チーム名（「Aチーム」など）をタップすると、その日出勤しているメンバーやリーダーを変更できます。</li>
-                        <li><strong>チームの追加:</strong> 中央ステーション右上の「＋チーム追加」ボタンから、その日の稼働チームを増やすことができます。</li>
-                        <li><strong>スタッフ情報:</strong> 「設定メニュー」＞「スタッフ設定」から、スタッフの追加・削除やベースとなる所属チーム、個人のカラー等を管理できます。</li>
+                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-1.5"><i class="fa-solid fa-users-gear text-blue-600 mr-1.5"></i>チームとスタッフの管理</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-[11px] sm:text-xs">
+                        <li><strong>本日のメンバー:</strong> マップ中央の各チーム名（「Aチーム」など）や「チーフ」をタップすると、その日出勤しているメンバーを変更できます。</li>
+                        <li><strong>枠の追加:</strong> 中央ステーション右上の「チーム追加」ボタンや左上の「チーフ追加」から、その日の稼働枠を増やすことができます。</li>
+                        <li><strong>スタッフ情報:</strong> 「設定」＞「スタッフ設定」から、スタッフの追加・削除やベースとなる所属チーム等を管理できます。チームごとにアイコン図形が自動割り当てられます。</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-2"><i class="fa-solid fa-floppy-disk text-slate-600 mr-1.5"></i>データの保存と読み込み</h4>
-                    <ul class="list-disc list-inside space-y-1 ml-1 text-xs sm:text-sm">
+                    <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-1.5"><i class="fa-solid fa-floppy-disk text-slate-600 mr-1.5"></i>データの保存と読み込み</h4>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-[11px] sm:text-xs">
                         <li>右上の「保存」ボタンを押すと、現在の状態がJSONファイルとしてダウンロードされます。</li>
                         <li>「読込」ボタンから保存したJSONファイルを選択すると、前回の状態を復元できます。</li>
                         <li>同じフォルダに <code>ward_allocation_data.json</code> を置いておくと、起動時に自動で読み込むか確認されます。</li>
@@ -559,14 +542,14 @@
                 </section>
 
             </div>
-            <div class="p-3 border-t bg-white flex justify-end">
-                <button onclick="closeHelpModal()" class="px-5 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition">閉じる</button>
+            <div class="p-2.5 border-t bg-white flex justify-end">
+                <button onclick="closeHelpModal()" class="px-4 py-1.5 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition">閉じる</button>
             </div>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toastMessage" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-xl border border-slate-700 pointer-events-none transition-all duration-300 opacity-0 translate-y-4 z-50 flex items-center space-x-2">
+    <div id="toastMessage" class="fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white text-xs font-semibold px-3 py-2 rounded-xl shadow-xl border border-slate-700 pointer-events-none transition-all duration-300 opacity-0 translate-y-4 z-50 flex items-center space-x-1.5">
         <i class="fa-solid fa-circle-check text-teal-400"></i>
         <span id="toastText">更新しました</span>
     </div>
@@ -600,34 +583,34 @@
         function showCustomAlert(msg) {
             document.getElementById('customDialogModal').classList.remove('hidden');
             document.getElementById('customDialogHeader').textContent = 'お知らせ';
-            document.getElementById('customDialogHeader').className = 'bg-teal-600 text-white p-3 font-bold text-sm flex items-center';
-            document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-circle-info mr-2"></i>お知らせ';
+            document.getElementById('customDialogHeader').className = 'bg-teal-600 text-white p-2.5 font-bold text-xs flex items-center';
+            document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-circle-info mr-1.5"></i>お知らせ';
             document.getElementById('customDialogMessage').textContent = msg;
             document.getElementById('customDialogInputContainer').classList.add('hidden');
             const btns = document.getElementById('customDialogButtons');
-            btns.innerHTML = `<button onclick="closeCustomDialog()" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-sm transition">OK</button>`;
+            btns.innerHTML = `<button onclick="closeCustomDialog()" class="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition">OK</button>`;
         }
 
         function showCustomConfirm(msg, callback) {
             document.getElementById('customDialogModal').classList.remove('hidden');
             document.getElementById('customDialogHeader').textContent = '確認';
-            document.getElementById('customDialogHeader').className = 'bg-rose-600 text-white p-3 font-bold text-sm flex items-center';
-            document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-2"></i>確認';
+            document.getElementById('customDialogHeader').className = 'bg-rose-600 text-white p-2.5 font-bold text-xs flex items-center';
+            document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>確認';
             document.getElementById('customDialogMessage').textContent = msg;
             document.getElementById('customDialogInputContainer').classList.add('hidden');
             customDialogCallback = callback;
             const btns = document.getElementById('customDialogButtons');
             btns.innerHTML = `
-                <button onclick="closeCustomDialog()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">キャンセル</button>
-                <button onclick="closeCustomDialog(); customDialogCallback();" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-sm transition">実行する</button>
+                <button onclick="closeCustomDialog()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold rounded-xl transition">キャンセル</button>
+                <button onclick="closeCustomDialog(); customDialogCallback();" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition">実行する</button>
             `;
         }
 
         function showCustomPrompt(msg, defaultVal, callback) {
             document.getElementById('customDialogModal').classList.remove('hidden');
             document.getElementById('customDialogHeader').textContent = '入力';
-            document.getElementById('customDialogHeader').className = 'bg-indigo-600 text-white p-3 font-bold text-sm flex items-center';
-            document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-pen-to-square mr-2"></i>入力';
+            document.getElementById('customDialogHeader').className = 'bg-indigo-600 text-white p-2.5 font-bold text-xs flex items-center';
+            document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-pen-to-square mr-1.5"></i>入力';
             document.getElementById('customDialogMessage').textContent = msg;
             document.getElementById('customDialogInputContainer').classList.remove('hidden');
             const input = document.getElementById('customDialogInput');
@@ -635,8 +618,8 @@
             customDialogCallback = callback;
             const btns = document.getElementById('customDialogButtons');
             btns.innerHTML = `
-                <button onclick="closeCustomDialog()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">キャンセル</button>
-                <button onclick="closeCustomDialog(); customDialogCallback(document.getElementById('customDialogInput').value);" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition">決定</button>
+                <button onclick="closeCustomDialog()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold rounded-xl transition">キャンセル</button>
+                <button onclick="closeCustomDialog(); customDialogCallback(document.getElementById('customDialogInput').value);" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition">決定</button>
             `;
         }
 
@@ -653,14 +636,11 @@
 
         // === DATA MODELS ===
         const BASE_FOUR_TEAMS = [
-            { id: 'none', label: '共用(カラー無)', bg: 'bg-slate-200', text: 'text-slate-800', border: 'border-slate-300', light: 'bg-slate-50', dot: 'bg-slate-400' },
-            { id: 'blue', label: 'Aチーム (青)', bg: 'bg-blue-600', text: 'text-white', border: 'border-blue-600', light: 'bg-blue-50', dot: 'bg-blue-600' },
-            { id: 'green', label: 'Bチーム (緑)', bg: 'bg-emerald-600', text: 'text-white', border: 'border-emerald-600', light: 'bg-emerald-50', dot: 'bg-emerald-600' },
-            { id: 'rose', label: 'Cチーム (赤)', bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-600', light: 'bg-rose-50', dot: 'bg-rose-600' },
-            { id: 'amber', label: 'Dチーム (黄)', bg: 'bg-amber-500', text: 'text-amber-950', border: 'border-amber-500', light: 'bg-amber-50', dot: 'bg-amber-500' }
+            { id: 'none', label: '共用(カラー無)', bg: 'bg-slate-200', text: 'text-slate-800', border: 'border-slate-300', light: 'bg-slate-50', dot: 'bg-slate-400', iconColor: 'text-slate-500', shape: '-' },
+            { id: 'blue', label: 'Aチーム (青)', bg: 'bg-blue-600', text: 'text-white', border: 'border-blue-600', light: 'bg-blue-50', dot: 'bg-blue-600', iconColor: 'text-blue-600', shape: '●' },
+            { id: 'green', label: 'Bチーム (緑)', bg: 'bg-emerald-600', text: 'text-white', border: 'border-emerald-600', light: 'bg-emerald-50', dot: 'bg-emerald-600', iconColor: 'text-emerald-600', shape: '▲' }
         ];
 
-        // 本日マップに表示する稼働チーム一覧（初期はAチームとBチームを表示し、「＋チーム追加」でC, D等を追加可能）
         let teams = [
             BASE_FOUR_TEAMS[0], // none
             BASE_FOUR_TEAMS[1], // blue (A)
@@ -668,23 +648,23 @@
         ];
 
         const TEAM_PRESETS = [
-            { id: 'rose', label: 'Cチーム (赤)', bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-600', light: 'bg-rose-50', dot: 'bg-rose-600' },
-            { id: 'amber', label: 'Dチーム (黄)', bg: 'bg-amber-500', text: 'text-amber-950', border: 'border-amber-500', light: 'bg-amber-50', dot: 'bg-amber-500' },
-            { id: 'purple', label: 'Eチーム (紫)', bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-600', light: 'bg-purple-50', dot: 'bg-purple-600' },
-            { id: 'cyan', label: 'Fチーム (水)', bg: 'bg-cyan-600', text: 'text-white', border: 'border-cyan-600', light: 'bg-cyan-50', dot: 'bg-cyan-600' }
+            { id: 'rose', label: 'Cチーム (赤)', bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-600', light: 'bg-rose-50', dot: 'bg-rose-600', iconColor: 'text-rose-600', shape: '■' },
+            { id: 'amber', label: 'Dチーム (黄)', bg: 'bg-amber-500', text: 'text-amber-950', border: 'border-amber-500', light: 'bg-amber-50', dot: 'bg-amber-500', iconColor: 'text-amber-500', shape: '★' },
+            { id: 'purple', label: 'Eチーム (紫)', bg: 'bg-purple-600', text: 'text-white', border: 'border-purple-600', light: 'bg-purple-50', dot: 'bg-purple-600', iconColor: 'text-purple-600', shape: '◆' },
+            { id: 'cyan', label: 'Fチーム (水)', bg: 'bg-cyan-600', text: 'text-white', border: 'border-cyan-600', light: 'bg-cyan-50', dot: 'bg-cyan-600', iconColor: 'text-cyan-600', shape: '▼' }
         ];
 
         const PERSONAL_COLORS = [
-            { id: 'red', name: '赤', bg: 'bg-red-500', text: 'text-white' },
-            { id: 'pink', name: 'ピンク', bg: 'bg-pink-500', text: 'text-white' },
-            { id: 'orange', name: 'オレンジ', bg: 'bg-orange-500', text: 'text-white' },
-            { id: 'amber', name: '黄', bg: 'bg-amber-500', text: 'text-white' },
-            { id: 'green', name: '緑', bg: 'bg-green-600', text: 'text-white' },
-            { id: 'teal', name: 'ティール', bg: 'bg-teal-500', text: 'text-white' },
-            { id: 'blue', name: '青', bg: 'bg-blue-500', text: 'text-white' },
-            { id: 'indigo', name: '藍', bg: 'bg-indigo-500', text: 'text-white' },
-            { id: 'purple', name: '紫', bg: 'bg-purple-500', text: 'text-white' },
-            { id: 'slate', name: 'グレー', bg: 'bg-slate-600', text: 'text-white' }
+            { id: 'red', name: '赤', bg: 'bg-red-500', text: 'text-white', textColor: 'text-red-500' },
+            { id: 'blue', name: '青', bg: 'bg-blue-500', text: 'text-white', textColor: 'text-blue-500' },
+            { id: 'green', name: '緑', bg: 'bg-green-600', text: 'text-white', textColor: 'text-green-600' },
+            { id: 'orange', name: 'オレンジ', bg: 'bg-orange-500', text: 'text-white', textColor: 'text-orange-500' },
+            { id: 'purple', name: '紫', bg: 'bg-purple-500', text: 'text-white', textColor: 'text-purple-500' },
+            { id: 'teal', name: 'ティール', bg: 'bg-teal-500', text: 'text-white', textColor: 'text-teal-500' },
+            { id: 'pink', name: 'ピンク', bg: 'bg-pink-500', text: 'text-white', textColor: 'text-pink-500' },
+            { id: 'amber', name: '黄', bg: 'bg-amber-500', text: 'text-white', textColor: 'text-amber-500' },
+            { id: 'indigo', name: '藍', bg: 'bg-indigo-500', text: 'text-white', textColor: 'text-indigo-500' },
+            { id: 'slate', name: 'グレー', bg: 'bg-slate-600', text: 'text-white', textColor: 'text-slate-600' }
         ];
 
         let clinicalWorkloadItems = [
@@ -707,6 +687,7 @@
             protectLowCap: true // true or false
         };
 
+        // Note: 転入院枠 is no longer in wardRooms. It is rendered separately.
         let wardRooms = [
             { roomNumber: '205-2', position: 'top', capacity: 4, team: 'blue' },
             { roomNumber: '205-1', position: 'top', capacity: 4, team: 'blue' },
@@ -716,37 +697,42 @@
             { roomNumber: '202', position: 'left', capacity: 4, team: 'blue' },
             { roomNumber: '203', position: 'right', capacity: 4, team: 'green' },
             { roomNumber: '204', position: 'right', capacity: 4, team: 'green' },
-            { roomNumber: '転入院枠', position: 'center', capacity: 3, team: 'none' }
+            { roomNumber: '207-2', position: 'bottom', capacity: 4, team: 'none' },
+            { roomNumber: '207-1', position: 'bottom', capacity: 4, team: 'none' }
         ];
 
         let nurses = [
             { id: 'N1', name: 'チーフ', baseTeam: 'blue', team: 'none', role: 'chief', canAdmit: false, capacity: 'low', personalColor: 'slate', isWorking: true },
-            { id: 'N2', name: '受持A', baseTeam: 'blue', team: 'blue', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'blue', isWorking: true },
-            { id: 'N3', name: '受持B', baseTeam: 'blue', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'teal', isWorking: true },
-            { id: 'N7', name: '受持C', baseTeam: 'rose', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'cyan', isWorking: true },
-            { id: 'N4', name: '受持D', baseTeam: 'green', team: 'green', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'green', isWorking: true },
-            { id: 'N5', name: '受持E', baseTeam: 'green', team: 'green', role: 'staff', canAdmit: false, capacity: 'low', personalColor: 'lime', isWorking: true },
-            { id: 'N6', name: '受持F', baseTeam: 'amber', team: 'green', role: 'staff', canAdmit: true, capacity: 'high', personalColor: 'orange', isWorking: true }
+            { id: 'N2', name: '受持A', baseTeam: 'blue', team: 'blue', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'red', isWorking: true },
+            { id: 'N3', name: '受持B', baseTeam: 'blue', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'blue', isWorking: true },
+            { id: 'N7', name: '受持C', baseTeam: 'rose', team: 'blue', role: 'staff', canAdmit: true, capacity: 'normal', personalColor: 'green', isWorking: true },
+            { id: 'N4', name: '受持D', baseTeam: 'green', team: 'green', role: 'leader', canAdmit: true, capacity: 'normal', personalColor: 'orange', isWorking: true },
+            { id: 'N5', name: '受持E', baseTeam: 'green', team: 'green', role: 'staff', canAdmit: false, capacity: 'low', personalColor: 'purple', isWorking: true },
+            { id: 'N6', name: '受持F', baseTeam: 'amber', team: 'green', role: 'staff', canAdmit: true, capacity: 'high', personalColor: 'teal', isWorking: true }
         ];
 
+        // Including patients for Transfer/Admission (room: '転入院枠')
         let patients = [
             { id: 'P1', room: '205-2', bedIndex: 0, name: '山田 太郎', state: { iv: '通常', careLevel: '低い' }, nurseId: null, plannedBed: '' },
             { id: 'P2', room: '205-2', bedIndex: 1, name: '佐藤 健二', state: { surgery: '術前日' }, nurseId: null, plannedBed: '' },
             { id: 'P3', room: '205-1', bedIndex: 0, name: '田中 実', state: { surgery: '術後ケア', careLevel: '高い' }, nurseId: null, plannedBed: '' },
-            { id: 'P4', room: '201', bedIndex: 0, name: '伊藤 和雄', state: { iv: '多い', surgery: '術当日' }, nurseId: null, plannedBed: '205-1' },
-            { id: 'P5', room: '転入院枠', bedIndex: 0, name: '森 節子', state: { admission: '入院あり' }, nurseId: null, plannedBed: '202-1' }
+            { id: 'P4', room: '201', bedIndex: 0, name: '伊藤 和雄', state: { iv: '多い', surgery: '術当日' }, nurseId: null, plannedBed: '' },
+            { id: 'P5', room: '207-1', bedIndex: 0, name: '森 節子', state: { admission: '入院あり' }, nurseId: null, plannedBed: '' },
+            { id: 'P_trans_1', room: '転入院枠', bedIndex: 0, name: '新規入院 1', state: { admission: '入院あり', careLevel: '高い' }, nurseId: null, plannedBed: '201-1' }
         ];
+
+        // Ensure Chief slot is visible initially.
+        let isChiefSlotVisible = true;
 
         let activePaintStaffId = null;
         let activePopoverPatientId = null;
         let tempState = {};
         let currentViewMode = 'map';
-        let showChiefFrame = true;
 
         let dragState = { isDown: false, isDragging: false, startX: 0, startY: 0, patientId: null, sourceRoom: null, sourceBed: null, clone: null, el: null };
 
         // === AUTO LOAD JSON STARTUP CHECK ===
-        const LOCAL_STORAGE_KEY = 'ward_allocator_autosave_v1';
+        const LOCAL_STORAGE_KEY = 'ward_allocator_autosave_v1_3';
 
         function applyLoadedData(dataObj) {
             if (dataObj.teams) teams = dataObj.teams;
@@ -755,24 +741,14 @@
             if (dataObj.nurses) nurses = dataObj.nurses;
             if (dataObj.patients) patients = dataObj.patients;
             if (dataObj.allocationRules) allocationRules = dataObj.allocationRules;
-            if (dataObj.showChiefFrame !== undefined) showChiefFrame = dataObj.showChiefFrame;
-            
-            // Migrate Admission room if needed
-            let admRoom = wardRooms.find(r => r.roomNumber === '転入院枠' || r.roomNumber === '転入院');
-            if (admRoom) {
-                admRoom.position = 'center';
-                if (admRoom.capacity > 3) admRoom.capacity = 3;
-            } else {
-                wardRooms.push({ roomNumber: '転入院枠', position: 'center', capacity: 3, team: 'none' });
-            }
-
+            if (dataObj.isChiefSlotVisible !== undefined) isChiefSlotVisible = dataObj.isChiefSlotVisible;
             updatePersonalColors();
             renderAll();
         }
 
         function saveToLocalStorage() {
             try {
-                const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, showChiefFrame, savedAt: new Date().toLocaleString('ja-JP') };
+                const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, isChiefSlotVisible, savedAt: new Date().toLocaleString('ja-JP') };
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataObj));
             } catch (e) {
                 console.warn('LocalStorage save failed:', e);
@@ -784,8 +760,8 @@
             modal.classList.remove('hidden');
             
             const header = document.getElementById('customDialogHeader');
-            header.className = 'bg-teal-700 text-white p-3.5 font-bold text-sm flex items-center justify-between';
-            header.innerHTML = '<span><i class="fa-solid fa-folder-open mr-2"></i>起動時データの読み込み確認</span>';
+            header.className = 'bg-teal-700 text-white p-2.5 font-bold text-xs flex items-center justify-between';
+            header.innerHTML = '<span><i class="fa-solid fa-folder-open mr-1.5"></i>起動時データの読み込み確認</span>';
             
             const msgEl = document.getElementById('customDialogMessage');
             document.getElementById('customDialogInputContainer').classList.add('hidden');
@@ -793,14 +769,14 @@
 
             if (options.type === 'json_file') {
                 msgEl.innerHTML = `
-                    <div class="space-y-2">
-                        <p class="font-bold text-slate-800">同じフォルダ内に設定ファイル (<code class="bg-slate-100 px-1.5 py-0.5 rounded text-teal-700 font-mono text-xs">${options.fileName}</code>) が見つかりました。</p>
-                        <p class="text-xs text-slate-500">このJSONデータを自動で読み込んで開始しますか？</p>
+                    <div class="space-y-1.5">
+                        <p class="font-bold text-slate-800">同じフォルダ内に設定ファイル (<code class="bg-slate-100 px-1 py-0.5 rounded text-teal-700 font-mono text-[10px]">${options.fileName}</code>) が見つかりました。</p>
+                        <p class="text-[11px] text-slate-500">このJSONデータを自動で読み込んで開始しますか？</p>
                     </div>
                 `;
                 btns.innerHTML = `
-                    <button onclick="closeCustomDialog()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">初期状態で開始</button>
-                    <button id="btnConfirmStartupJson" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center"><i class="fa-solid fa-check mr-1.5"></i>読み込む</button>
+                    <button onclick="closeCustomDialog()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold rounded-xl transition">初期状態で開始</button>
+                    <button id="btnConfirmStartupJson" class="px-4 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-bold rounded-xl shadow-md transition flex items-center"><i class="fa-solid fa-check mr-1"></i>読み込む</button>
                 `;
                 document.getElementById('btnConfirmStartupJson').onclick = () => {
                     closeCustomDialog();
@@ -811,22 +787,22 @@
             } else if (options.type === 'local_storage') {
                 const savedTime = options.data.savedAt ? `（保存日時: ${options.data.savedAt}）` : '';
                 msgEl.innerHTML = `
-                    <div class="space-y-2.5">
+                    <div class="space-y-2">
                         <p class="font-bold text-slate-800">前回の保存データ${savedTime}が見つかりました。自動で読み込んで復元しますか？</p>
-                        <p class="text-[11px] text-slate-500 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                            <i class="fa-solid fa-circle-info text-teal-600 mr-1"></i>ブラウザのセキュリティ制限（直接ファイルを開いた場合など）によりフォルダ内のJSONへ直接アクセスできない環境では、下のボタンから同じフォルダのJSONを選択して読み込むことも可能です。
+                        <p class="text-[10px] text-slate-500 leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-200">
+                            <i class="fa-solid fa-circle-info text-teal-600 mr-1"></i>ブラウザのセキュリティ制限等によりフォルダ内のJSONへ直接アクセスできない環境では、下のボタンから同じフォルダのJSONを選択して読み込むことも可能です。
                         </p>
                     </div>
                 `;
                 btns.innerHTML = `
-                    <div class="flex flex-wrap gap-2 w-full justify-end">
-                        <button onclick="closeCustomDialog()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">初期データで開始</button>
-                        <label class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer flex items-center">
-                            <i class="fa-solid fa-file-import mr-1.5"></i>JSONファイルを選択
+                    <div class="flex flex-wrap gap-1.5 w-full justify-end">
+                        <button onclick="closeCustomDialog()" class="px-2.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold rounded-xl transition">初期データ</button>
+                        <label class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition cursor-pointer flex items-center">
+                            <i class="fa-solid fa-file-import mr-1"></i>JSON選択
                             <input type="file" onchange="closeCustomDialog(); importData(event);" accept=".json" class="hidden">
                         </label>
-                        <button id="btnConfirmStartupLs" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center">
-                            <i class="fa-solid fa-rotate-right mr-1.5"></i>前回データを復元
+                        <button id="btnConfirmStartupLs" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-bold rounded-xl shadow-md transition flex items-center">
+                            <i class="fa-solid fa-rotate-right mr-1"></i>前回データを復元
                         </button>
                     </div>
                 `;
@@ -837,15 +813,15 @@
                 };
             } else {
                 msgEl.innerHTML = `
-                    <div class="space-y-2">
+                    <div class="space-y-1.5">
                         <p class="font-bold text-slate-800">保存されたJSONファイルを読み込んで開始しますか？</p>
-                        <p class="text-xs text-slate-500">同じフォルダに保存した <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-[11px]">ward_allocation_data.json</code> などのファイルを選択して読み込めます。</p>
+                        <p class="text-[11px] text-slate-500">同じフォルダに保存した <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-[9px]">ward_allocation_data.json</code> などのファイルを選択して読み込めます。</p>
                     </div>
                 `;
                 btns.innerHTML = `
-                    <button onclick="closeCustomDialog()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">このまま開始 (初期値)</button>
-                    <label class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition cursor-pointer flex items-center">
-                        <i class="fa-solid fa-folder-open mr-1.5"></i>JSONファイルを選択して読込
+                    <button onclick="closeCustomDialog()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold rounded-xl transition">このまま開始</button>
+                    <label class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-bold rounded-xl shadow-md transition cursor-pointer flex items-center">
+                        <i class="fa-solid fa-folder-open mr-1"></i>JSONを選択して読込
                         <input type="file" onchange="closeCustomDialog(); importData(event);" accept=".json" class="hidden">
                     </label>
                 `;
@@ -954,14 +930,14 @@
             const guide = document.getElementById('mapGuideBadge');
 
             if (mode === 'map') {
-                btnMap.className = "px-4 py-1.5 bg-white shadow-sm rounded-lg text-xs font-black text-teal-700 transition";
-                btnList.className = "px-4 py-1.5 text-slate-500 hover:text-slate-800 text-xs font-bold rounded-lg transition";
+                btnMap.className = "px-3 py-1 bg-white shadow-sm rounded-lg text-xs font-black text-teal-700 transition";
+                btnList.className = "px-3 py-1 text-slate-500 hover:text-slate-800 text-xs font-bold rounded-lg transition";
                 mapC.classList.remove('hidden');
                 listC.classList.add('hidden');
                 guide.classList.remove('hidden');
             } else {
-                btnList.className = "px-4 py-1.5 bg-white shadow-sm rounded-lg text-xs font-black text-teal-700 transition";
-                btnMap.className = "px-4 py-1.5 text-slate-500 hover:text-slate-800 text-xs font-bold rounded-lg transition";
+                btnList.className = "px-3 py-1 bg-white shadow-sm rounded-lg text-xs font-black text-teal-700 transition";
+                btnMap.className = "px-3 py-1 text-slate-500 hover:text-slate-800 text-xs font-bold rounded-lg transition";
                 listC.classList.remove('hidden');
                 listC.classList.add('flex');
                 mapC.classList.add('hidden');
@@ -1076,15 +1052,15 @@
         }
 
         function promptNewPatient(room, bed) {
-            showCustomPrompt(`${room} 号室に新しく登録する患者氏名:`, "新患", (name) => {
+            showCustomPrompt(`${room} に新しく登録する患者氏名:`, "新患", (name) => {
                 if (!name || !name.trim()) return;
-                patients.push({ id: 'P' + Date.now(), room: room, bedIndex: bed, name: name.trim(), state: {}, nurseId: activePaintStaffId || null });
+                patients.push({ id: 'P' + Date.now(), room: room, bedIndex: bed, name: name.trim(), state: {}, nurseId: activePaintStaffId || null, plannedBed: '' });
                 renderAll();
                 showToast('患者を登録しました');
             });
         }
 
-        // === ROOM EDIT MODAL (UPDATED) ===
+        // === ROOM EDIT MODAL ===
         let activeEditRoomIndex = -1;
 
         function openRoomEditModal(oldRoomNumber) {
@@ -1125,8 +1101,8 @@
                 return;
             }
 
-            if (newName !== oldName && wardRooms.some(r => r.roomNumber === newName)) {
-                showCustomAlert("すでに存在する部屋番号です。");
+            if (newName !== oldName && wardRooms.some(r => r.roomNumber === newName) || newName === '転入院枠') {
+                showCustomAlert("すでに存在する部屋番号か、予約された名称です。");
                 return;
             }
 
@@ -1154,59 +1130,70 @@
         // === RENDERING ===
         function createRoomQuad(room) {
             const div = document.createElement('div');
-            div.className = "flex flex-col w-[130px] sm:w-[140px] flex-shrink-0";
+            const isTransfer = room.roomNumber === '転入院枠' || room.roomNumber === '転入院';
+            div.className = isTransfer ? "flex flex-col w-[240px] sm:w-[260px] flex-shrink-0 mt-3" : "flex flex-col w-[130px] sm:w-[140px] flex-shrink-0";
+            
             let gridCols = room.capacity === 1 ? 'grid-cols-1' : (room.capacity === 2 ? 'grid-cols-2' : (room.capacity === 6 ? 'grid-cols-3' : 'grid-cols-2'));
-            if ((room.roomNumber === '転入院枠' || room.roomNumber === '転入院') && room.capacity === 3) gridCols = 'grid-cols-3';
+            if (isTransfer) gridCols = 'grid-cols-3';
 
             const teamDef = teams.find(t => t.id === room.team) || BASE_FOUR_TEAMS.find(t => t.id === room.team) || BASE_FOUR_TEAMS[0];
-            const teamBadge = room.team === 'none' ? '' : `<span class="text-[9px] px-1.5 py-0.5 rounded ${teamDef.bg} ${teamDef.text} shadow-sm">${teamDef.label.split(' ')[0]}</span>`;
+            const teamBadge = room.team === 'none' ? '' : `<span class="text-[9px] px-1.5 py-0.5 rounded ${teamDef.bg} ${teamDef.text} shadow-sm flex items-center"><span class="mr-1">${teamDef.shape}</span>${teamDef.label.split(' ')[0]}</span>`;
 
             let bedsHtml = '';
             for (let i = 0; i < room.capacity; i++) {
                 const p = patients.find(p => p.room === room.roomNumber && p.bedIndex === i);
+                const baseCellClass = isTransfer ? 'h-[52px] p-1' : 'h-[68px] p-1.5';
+
                 if (p) {
                     const nurse = nurses.find(n => n.id === p.nurseId);
                     const pDef = nurse ? (PERSONAL_COLORS.find(c => c.id === nurse.personalColor) || PERSONAL_COLORS[0]) : null;
+                    
+                    let nTeamDef = null;
+                    if (nurse) {
+                        const displayTeamId = (nurse.role === 'chief' && nurse.baseTeam && nurse.baseTeam !== 'none') ? nurse.baseTeam : nurse.team;
+                        nTeamDef = teams.find(t => t.id === displayTeamId) || BASE_FOUR_TEAMS.find(t => t.id === displayTeamId) || BASE_FOUR_TEAMS[0];
+                    }
+
                     const bg = 'bg-white';
                     
                     const circle = nurse 
-                        ? `<div class="w-3.5 h-3.5 rounded-full ${pDef.bg} border border-black/10 shadow-sm shrink-0" title="${nurse.name}"></div>`
-                        : `<div class="w-3.5 h-3.5 rounded-full bg-rose-100 border border-rose-400 flex items-center justify-center shadow-sm shrink-0" title="未割当"><span class="text-[8px] text-rose-600 font-black scale-75">未</span></div>`;
+                        ? `<div class="flex items-center justify-center w-4 h-4 shrink-0 ${pDef.textColor} drop-shadow-sm text-[12px] font-black" title="${nurse.name}">${nTeamDef.shape}</div>`
+                        : `<div class="w-4 h-4 rounded-full bg-rose-100 border border-rose-400 flex items-center justify-center shadow-sm shrink-0" title="未割当"><span class="text-[8px] text-rose-600 font-black scale-75">未</span></div>`;
                     
                     const pt = calcPoints(p.state);
                     const ptClass = pt >= 8 ? 'bg-rose-500' : (pt >= 4 ? 'bg-amber-500' : 'bg-emerald-600');
 
-                    const plannedBedText = (room.roomNumber === '転入院枠' || room.roomNumber === '転入院') ? 
-                        (p.plannedBed 
-                            ? `<div class="text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded px-1 mt-0.5 truncate text-center w-full shadow-sm">${p.plannedBed}予定</div>` 
-                            : `<div class="text-[8px] font-bold text-slate-400 border border-dashed border-slate-300 rounded px-1 mt-0.5 truncate text-center w-full bg-slate-50">+予定ﾍﾞｯﾄﾞ</div>`
-                        ) : '';
+                    const nameTextSize = isTransfer ? 'text-[10px]' : 'text-xs';
+                    const ptTextSize = isTransfer ? 'text-[8px] px-1 py-0.5' : 'text-[9px] px-1 py-0.5';
+                    const plannedBedHtml = (isTransfer && p.plannedBed) ? `<div class="text-[8px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 rounded px-1 w-full text-center mt-0.5 truncate leading-tight">${p.plannedBed}予定</div>` : '';
 
                     bedsHtml += `
                         <div data-room="${room.roomNumber}" data-bed="${i}" onpointerdown="onBedPointerDown(event, '${room.roomNumber}', ${i}, '${p.id}')" onpointermove="onBedPointerMove(event)" onpointerup="onBedPointerUp(event)"
-                             class="bed-cell p-1 flex flex-col justify-between cursor-pointer ${bg} hover:brightness-95 relative border border-slate-300 min-h-[50px]">
-                            <div class="flex items-center space-x-1.5 overflow-hidden w-full">
+                             class="bed-cell ${baseCellClass} flex flex-col justify-between cursor-pointer ${bg} hover:brightness-95 relative border border-slate-300">
+                            <div class="flex items-center space-x-1 overflow-hidden">
                                 ${circle}
-                                <span class="font-extrabold text-[11px] text-slate-900 leading-tight truncate flex-1">${p.name}</span>
+                                <span class="font-extrabold ${nameTextSize} text-slate-900 leading-tight truncate">${p.name}</span>
                             </div>
-                            ${plannedBedText}
-                            <div class="flex items-center justify-end mt-1">
-                                <span class="text-[9px] font-black px-1.5 py-0.5 rounded text-white shadow-sm ${ptClass}">${pt}pt</span>
+                            ${plannedBedHtml}
+                            <div class="flex items-center justify-end mt-auto pt-0.5">
+                                <span class="font-black rounded text-white shadow-sm ${ptClass} ${ptTextSize} leading-none">${pt}pt</span>
                             </div>
                         </div>`;
                 } else {
                     bedsHtml += `
                         <div data-room="${room.roomNumber}" data-bed="${i}" onpointerdown="onBedPointerDown(event, '${room.roomNumber}', ${i}, 'null')" onpointermove="onBedPointerMove(event)" onpointerup="onBedPointerUp(event)"
-                             class="bed-cell p-1 flex flex-col items-center justify-center cursor-pointer bg-slate-50 text-slate-400 border border-slate-300 hover:bg-teal-50 min-h-[50px]">
-                            <i class="fa-solid fa-plus text-[10px] opacity-50 mb-0.5"></i>
-                            <span class="text-[9px] font-bold">空床</span>
+                             class="bed-cell ${baseCellClass} flex flex-col items-center justify-center cursor-pointer bg-slate-50 text-slate-400 border border-slate-300 hover:bg-teal-50">
+                            <i class="fa-solid fa-plus text-[9px] opacity-50 mb-0.5"></i>
+                            <span class="text-[8px] font-bold">空床</span>
                         </div>`;
                 }
             }
 
+            const roomHeaderClick = isTransfer ? '' : `onclick="openRoomEditModal('${room.roomNumber}')" class="cursor-pointer hover:text-teal-600 transition" title="部屋の設定を変更"`;
+
             div.innerHTML = `
-                <div class="flex items-center justify-between px-2 mb-1 border-b-2 ${teamDef.border} bg-white py-0.5">
-                    <span class="text-xs font-black tracking-wide text-slate-800 cursor-pointer hover:text-teal-600 transition" onclick="openRoomEditModal('${room.roomNumber}')" title="部屋の設定を変更">${room.roomNumber}</span>
+                <div class="flex items-center justify-between px-1.5 mb-1 border-b-2 ${teamDef.border} bg-white py-1">
+                    <span class="text-xs font-black tracking-wide text-slate-800" ${roomHeaderClick}>${room.roomNumber}</span>
                     ${teamBadge}
                 </div>
                 <div class="grid ${gridCols} bg-slate-400 gap-px border border-slate-400 shadow-sm">
@@ -1224,23 +1211,35 @@
                 wardRooms.filter(r => r.position === pos).forEach(r => el.appendChild(createRoomQuad(r)));
             });
             renderNurses();
+            renderTransferAdmission();
+        }
+
+        function renderTransferAdmission() {
+            const container = document.getElementById('transferContainer');
+            container.innerHTML = '';
+            
+            const transferRoom = { roomNumber: '転入院枠', position: 'center', capacity: 3, team: 'none' };
+            container.appendChild(createRoomQuad(transferRoom));
         }
 
         function renderNurses() {
-            const chiefRow = document.getElementById('chiefRow');
-            const teamsRow = document.getElementById('teamsRow');
-            if(!chiefRow || !teamsRow) return;
+            const chiefContainer = document.getElementById('chiefContainer');
+            const teamsContainer = document.getElementById('teamsContainer');
+            if(!chiefContainer || !teamsContainer) return;
             
-            chiefRow.innerHTML = '';
-            teamsRow.innerHTML = '';
+            chiefContainer.innerHTML = '';
+            teamsContainer.innerHTML = '';
 
             const workingNurses = nurses.filter(n => n.isWorking !== false);
 
             const createNurseCard = (nurse) => {
                 const assigned = patients.filter(p => p.nurseId === nurse.id);
                 const score = assigned.reduce((sum, p) => sum + calcPoints(p.state), 0);
-                const tDef = teams.find(t => t.id === nurse.team) || teams[0];
+                
+                const displayTeamId = (nurse.role === 'chief' && nurse.baseTeam && nurse.baseTeam !== 'none') ? nurse.baseTeam : nurse.team;
+                const tDef = teams.find(t => t.id === displayTeamId) || BASE_FOUR_TEAMS.find(t => t.id === displayTeamId) || BASE_FOUR_TEAMS[0];
                 const pDef = PERSONAL_COLORS.find(c => c.id === nurse.personalColor) || PERSONAL_COLORS[0];
+                
                 const active = activePaintStaffId === nurse.id;
                 
                 let roleBadge = '';
@@ -1251,53 +1250,48 @@
 
                 return `
                     <div onclick="toggleStaffPaint('${nurse.id}')" 
-                         class="p-1 sm:p-1.5 rounded-xl border-2 cursor-pointer transition active:scale-95 flex flex-col items-center w-[85px] sm:w-[95px] bg-white relative
-                         ${active ? `ring-4 ring-slate-900 ${tDef.border}` : `border-slate-300 hover:border-slate-400 shadow-sm`}">
+                         class="p-1 sm:p-1.5 rounded-xl border-2 cursor-pointer transition active:scale-95 flex flex-col items-center w-[90px] sm:w-[100px] bg-white relative
+                         ${active ? `ring-2 ring-slate-900 ${tDef.border}` : `border-slate-300 hover:border-slate-400 shadow-sm`}">
                         ${roleBadge}
-                        <div class="flex items-center space-x-1 mb-1">
-                            <div class="w-3 h-3 rounded-full ${pDef.bg} border border-black/10 shadow-sm shrink-0"></div>
-                            <span class="text-[10px] sm:text-[11px] font-black text-slate-900 truncate max-w-[55px]">${nurse.name}</span>
+                        <div class="flex items-center space-x-1.5 mb-1.5 w-full justify-center overflow-hidden px-0.5">
+                            <div class="flex items-center justify-center w-3.5 h-3.5 shrink-0 ${pDef.textColor} drop-shadow-sm text-[11px] font-black">
+                                ${tDef.shape}
+                            </div>
+                            <span class="text-[11px] font-black text-slate-900 truncate">${nurse.name}</span>
                             ${admitIcon}
                         </div>
-                        <div class="w-full flex justify-between px-1.5 py-0.5 bg-slate-100 rounded text-[9px] items-center">
+                        <div class="w-full flex justify-between px-1.5 py-0.5 bg-slate-100 rounded text-[9px] sm:text-[10px] items-center">
                             <span class="font-bold text-slate-600">${assigned.length}名</span>
                             <span class="font-black ${score > 15 ? 'text-rose-600' : 'text-slate-700'}">${score}pt</span>
                         </div>
                     </div>`;
             };
 
-            // Toggle Chief Add Button Visibility
-            const btnAddChief = document.getElementById('btnAdChiefFrame');
-            if (btnAddChief) {
-                if (showChiefFrame) btnAddChief.classList.add('hidden');
-                else btnAddChief.classList.remove('hidden');
-            }
-
-            // 1. Chiefs & Admission Top Row
-            if (showChiefFrame) {
+            // 1. Chiefs Column (Left)
+            if (isChiefSlotVisible) {
                 const chiefs = workingNurses.filter(n => n.role === 'chief');
-                const chiefDiv = document.createElement('div');
-                chiefDiv.className = "flex-1 flex flex-col items-center justify-center bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm relative min-w-[100px] max-w-[160px]";
-                chiefDiv.innerHTML = `
-                    <button onclick="removeChiefFrame()" class="absolute top-1 right-1 text-rose-300 hover:text-rose-500 p-0.5"><i class="fa-solid fa-xmark text-[10px]"></i></button>
-                    <div onclick="openChiefRosterModal()" class="text-[10px] font-black text-slate-800 bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full shadow-sm mb-1.5 cursor-pointer transition active:scale-95 flex items-center mt-0.5">
-                        <i class="fa-solid fa-crown text-amber-500 mr-1.5"></i>チーフ <i class="fa-solid fa-pen text-[8px] ml-1.5 opacity-70"></i>
+                let chiefHtml = `<div class="flex flex-col items-center bg-white p-3 pt-4 rounded-2xl border border-slate-200 shadow-sm relative w-max mt-3">
+                    <div class="absolute top-1 right-2 text-rose-300 hover:text-rose-500 cursor-pointer text-xs" onclick="deleteChiefSlotFromModal()"><i class="fa-solid fa-xmark"></i></div>
+                    <div onclick="openChiefRosterModal()" class="text-[11px] font-black text-slate-800 bg-slate-200 hover:bg-slate-300 px-4 py-1 rounded-full shadow-sm mb-2 cursor-pointer transition active:scale-95 flex items-center absolute -top-3">
+                        <i class="fa-solid fa-crown text-amber-500 mr-1.5"></i>チーフ <i class="fa-solid fa-pen text-[9px] ml-1.5 opacity-70"></i>
                     </div>
-                    <div class="flex flex-row justify-center items-start flex-wrap gap-1.5 w-full">
-                        ${chiefs.length > 0 ? chiefs.map(createNurseCard).join('') : `<span onclick="openChiefRosterModal()" class="text-[9px] text-slate-400 py-1 cursor-pointer hover:text-slate-600">タップして選択</span>`}
-                    </div>
+                    <div class="flex flex-row justify-center items-center gap-2">`;
+                if (chiefs.length > 0) {
+                    chiefs.forEach(c => { chiefHtml += createNurseCard(c); });
+                } else {
+                    chiefHtml += `<span onclick="openChiefRosterModal()" class="text-[11px] text-slate-400 py-2 cursor-pointer hover:text-slate-600 px-4">タップして選択</span>`;
+                }
+                chiefHtml += `</div></div>`;
+                chiefContainer.innerHTML = chiefHtml;
+            } else {
+                chiefContainer.innerHTML = `
+                    <button onclick="toggleChiefSlot()" class="h-full border border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition cursor-pointer text-[11px] font-bold p-3 text-center w-[110px] mt-3">
+                        <i class="fa-solid fa-crown text-xl mb-1.5"></i>チーフ枠<br>追加
+                    </button>
                 `;
-                chiefRow.appendChild(chiefDiv);
             }
 
-            const admissionRoom = wardRooms.find(r => r.position === 'center' || r.roomNumber === '転入院枠' || r.roomNumber === '転入院');
-            if (admissionRoom) {
-                const admQuad = createRoomQuad(admissionRoom);
-                admQuad.className = "flex flex-col flex-1 min-w-[130px] max-w-[200px]"; // Override width for center
-                chiefRow.appendChild(admQuad);
-            }
-
-            // 2. Horizontal Team Layout
+            // 2. Teams Row (Center)
             const others = workingNurses.filter(n => n.role !== 'chief');
             
             teams.filter(t => t.id !== 'none').forEach(tDef => {
@@ -1310,23 +1304,52 @@
                     return 0;
                 });
                 
-                const teamTitle = `<div onclick="openTeamRosterModal('${tDef.id}')" class="text-[11px] font-black ${tDef.text} ${tDef.bg} px-4 py-1 rounded-full shadow-sm mb-2 shrink-0 cursor-pointer hover:brightness-110 active:scale-95 transition flex items-center">
-                    ${tDef.label} <i class="fa-solid fa-pen text-[9px] ml-1.5 opacity-80"></i>
+                const teamTitle = `<div onclick="openTeamRosterModal('${tDef.id}')" class="text-[11px] font-black ${tDef.text} ${tDef.bg} px-4 py-1 rounded-full shadow-sm mb-2 shrink-0 cursor-pointer hover:brightness-110 active:scale-95 transition flex items-center absolute -top-3">
+                    <span class="mr-1">${tDef.shape}</span> ${tDef.label} <i class="fa-solid fa-pen text-[9px] ml-1.5 opacity-80"></i>
                 </div>`;
 
                 let colHtml = `
-                    <div class="flex flex-col items-center bg-white p-1.5 sm:p-2 rounded-xl border border-slate-200 w-full shadow-sm">
+                    <div class="flex flex-col items-center bg-white p-3 pt-5 rounded-2xl border border-slate-200 shadow-sm w-full relative max-w-2xl mt-1">
                         ${teamTitle}
-                        <div class="flex flex-row justify-center items-start flex-wrap gap-1.5 w-full">
+                        <div class="flex flex-row justify-center items-start flex-wrap gap-2 w-full">
                 `;
                 if (teamNurses.length > 0) {
                     teamNurses.forEach(n => { colHtml += createNurseCard(n); });
                 } else {
-                    colHtml += `<span onclick="openTeamRosterModal('${tDef.id}')" class="text-[11px] text-slate-400 py-1.5 cursor-pointer hover:text-indigo-600 font-bold"><i class="fa-solid fa-user-plus mr-1"></i>タップして本日のメンバーを選択</span>`;
+                    colHtml += `<span onclick="openTeamRosterModal('${tDef.id}')" class="text-[11px] text-slate-400 py-1.5 cursor-pointer hover:text-indigo-600 font-bold"><i class="fa-solid fa-user-plus mr-1"></i>メンバー選択</span>`;
                 }
                 colHtml += `</div></div>`;
-                teamsRow.innerHTML += colHtml;
+                teamsContainer.innerHTML += colHtml;
             });
+        }
+
+        function toggleChiefSlot() {
+            isChiefSlotVisible = true;
+            renderNurses();
+            showToast('チーフ枠を追加しました');
+            saveToLocalStorage();
+        }
+
+        function deleteChiefSlotFromModal() {
+            isChiefSlotVisible = false;
+            
+            // Remove anyone currently acting as chief back to staff
+            const workingNurses = nurses.filter(n => n.isWorking !== false);
+            workingNurses.forEach(n => {
+                if (n.role === 'chief') {
+                    n.role = 'staff';
+                    if (n.baseTeam && teams.some(t => t.id === n.baseTeam)) {
+                        n.team = n.baseTeam;
+                    } else {
+                        n.team = 'none';
+                    }
+                }
+            });
+
+            closeTeamRosterModal();
+            renderNurses();
+            showToast('チーフ枠を非表示にしました');
+            saveToLocalStorage();
         }
 
         function renderListView() {
@@ -1334,18 +1357,18 @@
             const thead = document.getElementById('listViewTableHeader');
             const tbody = document.getElementById('listViewTableBody');
             
-            let headHtml = `<th class="p-2 w-16">病室-床</th><th class="p-2 w-24">患者名</th><th class="p-2 w-16 text-center">担当</th><th class="p-2 w-20">予定ベッド</th><th class="p-2 w-16 text-center text-teal-700">総点</th>`;
+            let headHtml = `<th class="p-1.5 w-16">病室-床</th><th class="p-1.5 w-20">患者名</th><th class="p-1.5 w-20">予定ベッド</th><th class="p-1.5 w-16 text-center">担当</th><th class="p-1.5 w-12 text-center text-teal-700">総点</th>`;
             clinicalWorkloadItems.forEach(item => {
-                headHtml += `<th class="p-2 font-semibold text-slate-600 min-w-[90px]"><i class="fa-solid ${item.icon} mr-1 text-[10px]"></i>${item.title}</th>`;
+                headHtml += `<th class="p-1.5 font-semibold text-slate-600 min-w-[100px]"><i class="fa-solid ${item.icon} mr-1 text-[9px]"></i>${item.title}</th>`;
             });
-            headHtml += `<th class="p-2 w-12 text-center text-rose-600">削除</th>`;
+            headHtml += `<th class="p-1.5 w-12 text-center text-rose-600">削除</th>`;
             thead.innerHTML = headHtml;
             tbody.innerHTML = '';
 
             let sortedPatients = [...patients].sort((a, b) => {
-                if (a.room === '転入院枠' && b.room !== '転入院枠') return 1;
-                if (a.room !== '転入院枠' && b.room === '転入院枠') return -1;
                 if (a.room === b.room) return a.bedIndex - b.bedIndex;
+                if (a.room === '転入院枠') return 1; // Put transfer at bottom
+                if (b.room === '転入院枠') return -1;
                 return a.room.localeCompare(b.room);
             });
 
@@ -1353,34 +1376,38 @@
                 const totalPts = calcPoints(p.state);
                 const ptClass = totalPts >= 8 ? 'text-rose-600' : (totalPts >= 4 ? 'text-amber-600' : 'text-emerald-600');
                 
+                const nurse = nurses.find(n => n.id === p.nurseId);
+                const pDef = nurse ? (PERSONAL_COLORS.find(c => c.id === nurse.personalColor) || PERSONAL_COLORS[0]) : null;
+                const displayTeamId = nurse ? ((nurse.role === 'chief' && nurse.baseTeam && nurse.baseTeam !== 'none') ? nurse.baseTeam : nurse.team) : null;
+                const tDef = nurse ? (teams.find(t=>t.id===displayTeamId)||BASE_FOUR_TEAMS.find(t=>t.id===displayTeamId)||BASE_FOUR_TEAMS[0]) : null;
+                const nBadge = nurse ? `<span class="${pDef.bg} ${pDef.text} text-[10px] px-1.5 py-0.5 rounded font-bold shadow-sm flex items-center justify-center space-x-1"><span>${tDef.shape}</span><span>${nurse.name}</span></span>` : `<span class="text-[10px] text-rose-500 font-bold">未</span>`;
+
                 let nurseSelectHtml = `<select onchange="updatePatientNurseFromList('${p.id}', this.value)" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs font-bold bg-white focus:outline-none focus:ring-1 focus:ring-teal-500">`;
                 nurseSelectHtml += `<option value="">(未割当)</option>`;
-                nurses.filter(n => n.isWorking !== false && n.role !== 'chief').forEach(n => {
+                nurses.filter(n => n.isWorking !== false).forEach(n => {
                     nurseSelectHtml += `<option value="${n.id}" ${n.id === p.nurseId ? 'selected' : ''}>${n.name}</option>`;
                 });
                 nurseSelectHtml += `</select>`;
 
-                let plannedBedInput = (p.room === '転入院' || p.room === '転入院枠') 
-                    ? `<input type="text" value="${p.plannedBed || ''}" onchange="updatePatientPlannedBed('${p.id}', this.value)" class="w-full border border-slate-300 rounded px-2 py-1 text-xs font-bold bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 placeholder-slate-300" placeholder="予定">`
-                    : `<span class="text-slate-300 text-xs">-</span>`;
+                let plannedBedInput = p.room === '転入院枠' ? `<input type="text" value="${p.plannedBed || ''}" onchange="updatePatientPlannedBed('${p.id}', this.value)" placeholder="例: 201-1" class="w-16 border border-slate-300 rounded px-1.5 py-1 font-bold text-[10px] focus:outline-none focus:ring-1 focus:ring-teal-400 bg-white">` : '<span class="text-[10px] text-slate-300">-</span>';
 
                 let rowHtml = `<tr class="border-b hover:bg-slate-50 transition">
-                    <td class="p-2 font-mono text-slate-500">${p.room}-${p.bedIndex + 1}</td>
-                    <td class="p-2 font-bold text-slate-900 text-[11px] sm:text-xs">${p.name}</td>
-                    <td class="p-2 text-center">${nurseSelectHtml}</td>
-                    <td class="p-2">${plannedBedInput}</td>
-                    <td class="p-2 text-center font-black ${ptClass}">${totalPts}</td>
+                    <td class="p-1.5 font-mono text-slate-500 text-[10px]">${p.room}-${p.bedIndex + 1}</td>
+                    <td class="p-1.5 font-bold text-slate-900"><input type="text" value="${p.name}" onchange="updatePatientName('${p.id}', this.value)" class="w-full border border-slate-300 rounded px-1 py-1 font-bold text-xs bg-white focus:outline-none"></td>
+                    <td class="p-1.5 text-center">${plannedBedInput}</td>
+                    <td class="p-1.5 text-center">${nurseSelectHtml}</td>
+                    <td class="p-1.5 text-center font-black ${ptClass}">${totalPts}</td>
                 `;
                 clinicalWorkloadItems.forEach(item => {
                     const currentVal = p.state[item.id] || 'なし';
-                    let selectHtml = `<select onchange="updatePatientStateFromList('${p.id}', '${item.id}', this.value)" class="w-full border border-slate-300 rounded px-1 py-1 text-xs bg-white focus:ring focus:ring-teal-200 outline-none">`;
+                    let selectHtml = `<select onchange="updatePatientStateFromList('${p.id}', '${item.id}', this.value)" class="w-full border border-slate-300 rounded px-1 py-1 text-[11px] bg-white focus:ring focus:ring-teal-200 outline-none">`;
                     let hasCurrentVal = item.options.some(o => o.label === currentVal);
                     if(!hasCurrentVal) selectHtml += `<option value="${currentVal}" selected>${currentVal} (?pt)</option>`; // fallback
                     item.options.forEach(opt => { selectHtml += `<option value="${opt.label}" ${currentVal === opt.label ? 'selected' : ''}>${opt.label} (+${opt.points})</option>`; });
                     selectHtml += `</select>`;
-                    rowHtml += `<td class="p-2">${selectHtml}</td>`;
+                    rowHtml += `<td class="p-1.5">${selectHtml}</td>`;
                 });
-                rowHtml += `<td class="p-2 text-center"><button onclick="requestPatientDeletionFromList('${p.id}')" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded-lg"><i class="fa-solid fa-trash-can"></i></button></td>`;
+                rowHtml += `<td class="p-1.5 text-center"><button onclick="requestPatientDeletionFromList('${p.id}')" class="text-rose-500 hover:text-rose-700 p-1 bg-rose-50 rounded-lg"><i class="fa-solid fa-trash-can"></i></button></td>`;
                 rowHtml += `</tr>`;
                 tbody.innerHTML += rowHtml;
             });
@@ -1390,15 +1417,20 @@
             const p = patients.find(p => p.id === pId);
             if (p) { p.state[itemId] = val; renderAll(); }
         }
-
-        function updatePatientNurseFromList(pId, val) {
+        
+        function updatePatientName(pId, newName) {
             const p = patients.find(p => p.id === pId);
-            if (p) { p.nurseId = val || null; renderAll(); }
+            if (p) { p.name = newName; renderAll(); }
         }
 
-        function updatePatientPlannedBed(pId, val) {
+        function updatePatientPlannedBed(pId, newBed) {
             const p = patients.find(p => p.id === pId);
-            if (p) { p.plannedBed = val.trim(); renderAll(); }
+            if (p) { p.plannedBed = newBed; renderAll(); }
+        }
+
+        function updatePatientNurseFromList(pId, nId) {
+            const p = patients.find(p => p.id === pId);
+            if (p) { p.nurseId = nId || null; renderAll(); }
         }
 
         function toggleStaffPaint(id) {
@@ -1407,7 +1439,7 @@
                 activePaintStaffId = id;
                 const nurse = nurses.find(n => n.id === id);
                 const badge = document.getElementById('currentModeBadge');
-                badge.className = `bg-teal-50 text-teal-800 border border-teal-500 px-2 py-0.5 rounded-lg text-[11px] font-black flex items-center space-x-1`;
+                badge.className = `bg-teal-50 text-teal-800 border border-teal-500 px-2 py-0.5 rounded-lg text-[10px] font-black flex items-center space-x-1`;
                 badge.innerHTML = `<span>【${nurse.name}】割当モード (ベッドをタップ)</span>`;
                 document.getElementById('btnClearActiveStaff').classList.remove('hidden');
                 renderNurses();
@@ -1416,10 +1448,19 @@
         function clearActivePaintStaff() {
             activePaintStaffId = null;
             const badge = document.getElementById('currentModeBadge');
-            badge.className = `bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded-lg text-[11px] font-bold flex items-center space-x-1`;
+            badge.className = `bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center space-x-1`;
             badge.innerHTML = `<i class="fa-solid fa-hand-pointer text-teal-600"></i><span>ベッドタップで設定 / ドラッグで移動</span>`;
             document.getElementById('btnClearActiveStaff').classList.add('hidden');
             renderNurses();
+        }
+
+        function clearAllAllocations() {
+            showCustomConfirm("当日のすべての患者の「担当看護師（受け持ち）」を未割当にしますか？\n（患者データ自体は削除されません）", () => {
+                patients.forEach(p => { p.nurseId = null; });
+                clearActivePaintStaff();
+                renderAll();
+                showToast('すべての割り当てをクリアしました');
+            });
         }
 
         // === POPOVER ===
@@ -1431,20 +1472,19 @@
             const nurse = nurses.find(n => n.id === p.nurseId);
             document.getElementById('popoverPatientRoomBadge').textContent = `${p.room} (ベッド${p.bedIndex + 1})`;
             document.getElementById('popoverPatientName').textContent = p.name;
+            document.getElementById('popoverPatientAssignedStaff').textContent = nurse ? `担当: ${nurse.name}` : '担当: 未割当';
             
-            const nurseSelect = document.getElementById('popoverNurseSelect');
-            nurseSelect.innerHTML = '<option value="">(未割当)</option>';
-            nurses.filter(n => n.isWorking !== false && n.role !== 'chief').forEach(n => {
-                nurseSelect.innerHTML += `<option value="${n.id}" ${n.id === p.nurseId ? 'selected' : ''}>${n.name}</option>`;
-            });
-
-            if (p.room === '転入院' || p.room === '転入院枠') {
-                document.getElementById('popoverPlannedBedContainer').classList.remove('hidden');
-                document.getElementById('popoverPlannedBed').value = p.plannedBed || '';
+            const plannedBedContainer = document.getElementById('popoverPlannedBedContainer');
+            const plannedBedInput = document.getElementById('popoverPlannedBedInput');
+            if (p.room === '転入院枠') {
+                plannedBedContainer.classList.remove('hidden');
+                plannedBedContainer.classList.add('flex');
+                plannedBedInput.value = p.plannedBed || '';
             } else {
-                document.getElementById('popoverPlannedBedContainer').classList.add('hidden');
+                plannedBedContainer.classList.add('hidden');
+                plannedBedContainer.classList.remove('flex');
             }
-            
+
             renderPopoverOptions();
             document.getElementById('floatingPatientPopover').classList.remove('hidden');
         }
@@ -1453,10 +1493,11 @@
             const p = patients.find(p => p.id === activePopoverPatientId);
             if (p) { 
                 p.state = JSON.parse(JSON.stringify(tempState)); 
-                p.nurseId = document.getElementById('popoverNurseSelect').value || null;
-                p.plannedBed = document.getElementById('popoverPlannedBed').value.trim();
+                if (p.room === '転入院枠') {
+                    p.plannedBed = document.getElementById('popoverPlannedBedInput').value;
+                }
                 renderAll(); 
-                showToast('設定を保存しました'); 
+                showToast('負荷設定を保存しました'); 
             }
             closeFloatingPopover();
         }
@@ -1486,13 +1527,13 @@
             clinicalWorkloadItems.forEach(item => {
                 const currentVal = tempState[item.id] || 'なし';
                 let html = `<div class="bg-white p-2 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div class="flex items-center space-x-1.5 mb-2"><i class="fa-solid ${item.icon} text-teal-600 text-[10px]"></i><span class="font-bold text-slate-800 text-xs">${item.title}</span></div>
+                        <div class="flex items-center space-x-1.5 mb-1.5"><i class="fa-solid ${item.icon} text-teal-600 text-[11px]"></i><span class="font-bold text-slate-800 text-[11px]">${item.title}</span></div>
                         <div class="flex flex-wrap gap-1">`;
                 item.options.forEach(opt => {
                     const active = currentVal === opt.label;
                     html += `<button onclick="tempState['${item.id}']='${opt.label}'; renderPopoverOptions();" 
-                                class="flex-1 py-1.5 px-1 rounded border text-center transition font-bold flex flex-col items-center ${active ? 'bg-teal-600 text-white border-teal-600 shadow-inner' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}">
-                            <span class="text-[10px] sm:text-xs leading-none">${opt.label}</span><span class="text-[9px] mt-1 opacity-80 leading-none">+${opt.points}</span>
+                                class="flex-1 py-1 px-1 rounded border text-center transition font-bold flex flex-col items-center ${active ? 'bg-teal-600 text-white border-teal-600 shadow-inner' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}">
+                            <span class="text-[10px] leading-none">${opt.label}</span><span class="text-[9px] mt-1 opacity-80 leading-none">+${opt.points}</span>
                         </button>`;
                 });
                 html += `</div></div>`;
@@ -1510,28 +1551,28 @@
             c.innerHTML = '';
             clinicalWorkloadItems.forEach((item, i) => {
                 let html = `
-                    <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm relative group">
+                    <div class="bg-white border border-slate-200 rounded-xl p-2.5 shadow-sm relative group">
                         <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
-                            <div class="flex items-center space-x-2 w-full max-w-[200px]">
+                            <div class="flex items-center space-x-2 w-full max-w-[180px]">
                                 <i class="fa-solid ${item.icon} text-teal-600"></i>
-                                <input type="text" value="${item.title}" onchange="updateWorkloadItemTitle(${i}, this.value)" class="font-black text-sm text-slate-800 border-b border-dashed border-slate-400 bg-transparent px-1 py-0.5 focus:outline-none focus:border-teal-500 w-full">
+                                <input type="text" value="${item.title}" onchange="updateWorkloadItemTitle(${i}, this.value)" class="font-black text-xs text-slate-800 border-b border-dashed border-slate-400 bg-transparent px-1 py-0.5 focus:outline-none focus:border-teal-500 w-full">
                             </div>
-                            <button onclick="requestDeleteWorkloadItem(${i})" class="text-rose-400 hover:text-rose-600 px-2 py-1 bg-rose-50 rounded text-xs font-bold transition"><i class="fa-solid fa-trash-can mr-1"></i>項目削除</button>
+                            <button onclick="requestDeleteWorkloadItem(${i})" class="text-rose-400 hover:text-rose-600 px-2 py-1 bg-rose-50 rounded text-[10px] font-bold transition"><i class="fa-solid fa-trash-can mr-1"></i>削除</button>
                         </div>
-                        <div class="flex flex-wrap gap-2">
+                        <div class="flex flex-wrap gap-1.5">
                 `;
                 item.options.forEach((opt, j) => {
                     html += `
-                        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1.5 space-x-1 shadow-sm">
-                            <input type="text" value="${opt.label}" onchange="updateWorkloadOptionLabel(${i}, ${j}, '${opt.label}', this.value)" class="w-16 sm:w-20 px-1 py-0.5 text-xs font-bold bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-400">
-                            <input type="number" min="0" max="20" value="${opt.points}" onchange="updateWorkloadOptionPoints(${i}, ${j}, this.value)" class="w-10 px-1 py-0.5 text-xs font-bold text-right bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-400">
-                            <span class="text-[10px] font-bold text-slate-500 pr-1">pt</span>
-                            <button onclick="deleteWorkloadOption(${i}, ${j})" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-circle-xmark"></i></button>
+                        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1 space-x-1 shadow-sm">
+                            <input type="text" value="${opt.label}" onchange="updateWorkloadOptionLabel(${i}, ${j}, '${opt.label}', this.value)" class="w-14 px-1 py-0.5 text-[10px] font-bold bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-400">
+                            <input type="number" min="0" max="20" value="${opt.points}" onchange="updateWorkloadOptionPoints(${i}, ${j}, this.value)" class="w-8 px-1 py-0.5 text-[10px] font-bold text-right bg-white border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-400">
+                            <span class="text-[9px] font-bold text-slate-500 pr-1">pt</span>
+                            <button onclick="deleteWorkloadOption(${i}, ${j})" class="text-slate-400 hover:text-rose-500 text-[10px]"><i class="fa-solid fa-circle-xmark"></i></button>
                         </div>
                     `;
                 });
                 html += `
-                            <button onclick="addWorkloadOption(${i})" class="flex items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-300 border-dashed rounded-lg px-3 py-1.5 text-xs font-bold text-slate-600 transition">
+                            <button onclick="addWorkloadOption(${i})" class="flex items-center justify-center bg-slate-100 hover:bg-slate-200 border border-slate-300 border-dashed rounded-lg px-2 py-1 text-[10px] font-bold text-slate-600 transition">
                                 <i class="fa-solid fa-plus mr-1"></i>選択肢追加
                             </button>
                         </div>
@@ -1580,33 +1621,38 @@
         function renderLayoutTable() {
             const tbody = document.getElementById('roomsTableBody'); tbody.innerHTML = '';
             wardRooms.forEach((r, i) => {
-                let teamSelectHtml = `<select onchange="wardRooms[${i}].team=this.value" class="border border-slate-300 rounded p-1 text-xs w-full">`;
-                BASE_FOUR_TEAMS.forEach(tc => { teamSelectHtml += `<option value="${tc.id}" ${r.team === tc.id ? 'selected' : ''}>${tc.label}</option>`; });
+                let teamSelectHtml = `<select onchange="wardRooms[${i}].team=this.value" class="border border-slate-300 rounded p-1 text-[11px] w-full font-bold">`;
+                BASE_FOUR_TEAMS.forEach(tc => { teamSelectHtml += `<option value="${tc.id}" ${r.team === tc.id ? 'selected' : ''}>${tc.shape} ${tc.label}</option>`; });
                 teamSelectHtml += `</select>`;
                 tbody.innerHTML += `
                     <tr class="border-b bg-white hover:bg-slate-50">
-                        <td class="p-2"><input type="text" value="${r.roomNumber}" onchange="updateRoomNumber(${i}, this.value)" class="w-24 border border-slate-300 rounded px-1.5 py-1 font-bold text-xs"></td>
-                        <td class="p-2">
-                            <select onchange="wardRooms[${i}].position=this.value" class="border border-slate-300 rounded p-1 text-xs">
+                        <td class="p-1.5"><input type="text" value="${r.roomNumber}" onchange="updateRoomNumber(${i}, this.value)" class="w-20 border border-slate-300 rounded px-1.5 py-1 font-bold text-xs"></td>
+                        <td class="p-1.5">
+                            <select onchange="wardRooms[${i}].position=this.value" class="border border-slate-300 rounded p-1 text-[11px]">
                                 <option value="top" ${r.position === 'top' ? 'selected' : ''}>上部 (Top)</option>
                                 <option value="left" ${r.position === 'left' ? 'selected' : ''}>左側 (Left)</option>
                                 <option value="right" ${r.position === 'right' ? 'selected' : ''}>右側 (Right)</option>
                                 <option value="bottom" ${r.position === 'bottom' ? 'selected' : ''}>下部 (Bottom)</option>
                             </select>
                         </td>
-                        <td class="p-2">
-                            <select onchange="updateRoomCapacity(${i}, parseInt(this.value))" class="border border-slate-300 rounded p-1 text-xs">
+                        <td class="p-1.5">
+                            <select onchange="updateRoomCapacity(${i}, parseInt(this.value))" class="border border-slate-300 rounded p-1 text-[11px]">
                                 ${[1, 2, 4, 6].map(cap => `<option value="${cap}" ${r.capacity === cap ? 'selected' : ''}>${cap}床</option>`).join('')}
                             </select>
                         </td>
-                        <td class="p-2 w-40">${teamSelectHtml}</td>
-                        <td class="p-2 text-right"><button onclick="requestDelRoom(${i})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
+                        <td class="p-1.5 w-32">${teamSelectHtml}</td>
+                        <td class="p-1.5 text-right"><button onclick="requestDelRoom(${i})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
                     </tr>`;
             });
         }
 
         function updateRoomNumber(idx, newNum) {
             const oldNum = wardRooms[idx].roomNumber;
+            if (newNum === '転入院枠' || newNum === '転入院') {
+                showCustomAlert("その名前は予約されているため使用できません。");
+                renderLayoutTable();
+                return;
+            }
             wardRooms[idx].roomNumber = newNum;
             patients.forEach(p => { if (p.room === oldNum) p.room = newNum; });
         }
@@ -1638,29 +1684,7 @@
 
         // === STAFF SETTINGS & DAILY TEAM ROSTER ===
 
-        function addChiefFrame() {
-            showChiefFrame = true;
-            renderAll();
-            showToast('チーフ枠を追加しました');
-        }
-
-        function removeChiefFrame() {
-            showCustomConfirm("チーフ枠を削除しますか？\n（割り当てられていたチーフは未割当に戻ります）", () => {
-                showChiefFrame = false;
-                nurses.forEach(n => {
-                    if (n.role === 'chief') {
-                        n.role = 'staff';
-                        if (n.baseTeam && teams.some(t => t.id === n.baseTeam)) n.team = n.baseTeam;
-                        else n.team = 'none';
-                    }
-                });
-                renderAll();
-                showToast('チーフ枠を非表示にしました');
-            });
-        }
-
         function addNewTeam() {
-            // まだマップにないチームをBASE_FOUR_TEAMSまたはTEAM_PRESETSから探して追加
             const allPresets = [...BASE_FOUR_TEAMS.slice(1), ...TEAM_PRESETS];
             const unused = allPresets.find(p => !teams.some(t => t.id === p.id));
             if (unused) {
@@ -1671,7 +1695,7 @@
                 teams.push({
                     id: `team_${Date.now()}`,
                     label: `${nextAlphabet}チーム`,
-                    bg: fallback.bg, text: fallback.text, border: fallback.border, light: fallback.light, dot: fallback.dot
+                    bg: fallback.bg, text: fallback.text, border: fallback.border, light: fallback.light, dot: fallback.dot, iconColor: fallback.iconColor, shape: fallback.shape
                 });
             }
             renderAll();
@@ -1700,8 +1724,14 @@
         }
         
         function updatePersonalColors() {
-            nurses.forEach((n, idx) => {
-                n.personalColor = PERSONAL_COLORS[idx % PERSONAL_COLORS.length].id;
+            const teamColorUsage = {};
+            nurses.forEach((n) => {
+                const teamId = (n.baseTeam && n.baseTeam !== 'none') ? n.baseTeam : n.team;
+                if (!teamColorUsage[teamId]) {
+                    teamColorUsage[teamId] = 0;
+                }
+                n.personalColor = PERSONAL_COLORS[teamColorUsage[teamId] % PERSONAL_COLORS.length].id;
+                teamColorUsage[teamId]++;
             });
         }
 
@@ -1710,39 +1740,39 @@
         function openTeamRosterModal(teamId) {
             activeEditTeamId = teamId;
             const tDef = teams.find(t => t.id === teamId) || BASE_FOUR_TEAMS.find(t => t.id === teamId) || teams[0];
-            document.getElementById('teamRosterModalTitle').innerHTML = `<div class="flex items-center space-x-2"><div class="w-4 h-4 rounded-full border border-white/60 shadow-sm ${tDef.bg}"></div><span>${tDef.label} の本日メンバー選択</span></div>`;
+            document.getElementById('teamRosterModalTitle').innerHTML = `<div class="flex items-center space-x-1.5"><div class="flex items-center justify-center w-5 h-5 rounded-full border border-white/60 shadow-sm ${tDef.bg} text-[10px] text-white font-black">${tDef.shape}</div><span>${tDef.label.split(' ')[0]} メンバー</span></div>`;
             
             const delBtn = document.getElementById('btnDeleteActiveTeam');
             if (delBtn) delBtn.classList.remove('hidden');
 
             const eligibleNurses = nurses.filter(n => n.role !== 'chief' && n.isWorking !== false);
             const listContainer = document.getElementById('teamRosterList');
-            listContainer.innerHTML = '<p class="text-xs text-slate-500 mb-2">本日このチームとして勤務するスタッフにチェックを入れ、リーダーを1名選択してください。（他チームのスタッフも選択可能です）</p>';
+            listContainer.innerHTML = '<p class="text-[10px] text-slate-500 mb-2">本日勤務するスタッフにチェックを入れ、リーダーを選択してください。</p>';
             
             eligibleNurses.forEach(n => {
                 const isMember = n.team === teamId;
                 const isLeader = isMember && n.role === 'leader';
                 const baseTDef = BASE_FOUR_TEAMS.find(t => t.id === (n.baseTeam || n.team)) || BASE_FOUR_TEAMS[0];
                 const baseTeamBadge = (!n.baseTeam || n.baseTeam === 'none') 
-                    ? `<span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300 mr-1"></span>` 
-                    : `<span class="inline-block w-2.5 h-2.5 rounded-full ${baseTDef.bg} mr-1 shadow-2xs"></span>`;
+                    ? `<span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300 mr-1 text-[8px] flex items-center justify-center font-black text-white">-</span>` 
+                    : `<span class="inline-block w-2.5 h-2.5 rounded-full ${baseTDef.bg} mr-1 shadow-2xs text-[8px] flex items-center justify-center font-black text-white">${baseTDef.shape}</span>`;
                 const currentAssignText = (n.team && n.team !== 'none' && n.team !== teamId) 
-                    ? `<span class="text-[10px] text-amber-600 font-bold ml-1.5">[現在:${(teams.find(t=>t.id===n.team)||BASE_FOUR_TEAMS[0]).label.split(' ')[0]}]</span>` 
+                    ? `<span class="text-[9px] text-amber-600 font-bold ml-1">[現在:${(teams.find(t=>t.id===n.team)||BASE_FOUR_TEAMS[0]).label.split(' ')[0]}]</span>` 
                     : '';
                 
                 listContainer.innerHTML += `
-                    <div class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm">
-                        <label class="flex items-center space-x-2 cursor-pointer flex-1">
-                            <input type="checkbox" id="chk_member_${n.id}" class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500" ${isMember ? 'checked' : ''} onchange="toggleTeamMember('${n.id}', this.checked)">
-                            <span class="text-sm font-bold text-slate-800 flex items-center flex-wrap">
+                    <div class="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-lg shadow-sm">
+                        <label class="flex items-center space-x-1.5 cursor-pointer flex-1">
+                            <input type="checkbox" id="chk_member_${n.id}" class="w-3.5 h-3.5 text-indigo-600 rounded focus:ring-indigo-500" ${isMember ? 'checked' : ''} onchange="toggleTeamMember('${n.id}', this.checked)">
+                            <span class="text-xs font-bold text-slate-800 flex items-center flex-wrap">
                                 <span>${n.name}</span>
-                                <span class="text-[10px] text-slate-500 font-normal ml-2 flex items-center bg-slate-100 px-1.5 py-0.5 rounded">${baseTeamBadge}${baseTDef.label.split(' ')[0]}</span>
+                                <span class="text-[9px] text-slate-500 font-normal ml-1.5 flex items-center bg-slate-100 px-1 py-0.5 rounded">${baseTeamBadge}${baseTDef.label.split(' ')[0]}</span>
                                 ${currentAssignText}
                             </span>
                         </label>
-                        <div class="flex items-center space-x-1.5 shrink-0 ml-2">
-                            <input type="radio" name="teamLeader" id="rad_leader_${n.id}" value="${n.id}" class="w-4 h-4 text-rose-500 focus:ring-rose-500" ${isLeader ? 'checked' : ''} ${!isMember ? 'disabled' : ''}>
-                            <label for="rad_leader_${n.id}" class="text-xs font-bold text-slate-600 ${!isMember ? 'opacity-40' : ''} cursor-pointer">リーダー</label>
+                        <div class="flex items-center space-x-1 shrink-0 ml-1">
+                            <input type="radio" name="teamLeader" id="rad_leader_${n.id}" value="${n.id}" class="w-3.5 h-3.5 text-rose-500 focus:ring-rose-500" ${isLeader ? 'checked' : ''} ${!isMember ? 'disabled' : ''}>
+                            <label for="rad_leader_${n.id}" class="text-[10px] font-bold text-slate-600 ${!isMember ? 'opacity-40' : ''} cursor-pointer">L</label>
                         </div>
                     </div>
                 `;
@@ -1779,32 +1809,37 @@
             });
             
             closeTeamRosterModal();
+            updatePersonalColors();
             showToast('本日のチームメンバーを更新しました');
         }
 
         function openChiefRosterModal() {
             activeEditTeamId = null;
-            document.getElementById('teamRosterModalTitle').innerHTML = `<div class="flex items-center space-x-2"><i class="fa-solid fa-crown text-amber-400"></i><span>本日のチーフ選択</span></div>`;
+            document.getElementById('teamRosterModalTitle').innerHTML = `<div class="flex items-center space-x-1.5"><i class="fa-solid fa-crown text-amber-400"></i><span>本日のチーフ選択</span></div>`;
             
             const delBtn = document.getElementById('btnDeleteActiveTeam');
-            if (delBtn) delBtn.classList.add('hidden');
+            if (delBtn) {
+                delBtn.classList.remove('hidden');
+                delBtn.onclick = deleteChiefSlotFromModal; // Re-use delete button for chief
+                delBtn.innerHTML = '<i class="fa-solid fa-trash-can mr-1"></i>チーフ枠を非表示';
+            }
 
             const workingNurses = nurses.filter(n => n.isWorking !== false);
             const listContainer = document.getElementById('teamRosterList');
-            listContainer.innerHTML = '<p class="text-xs text-slate-500 mb-2">本日チーフ（複数可）を担当するスタッフをチェックしてください。</p>';
+            listContainer.innerHTML = '<p class="text-[10px] text-slate-500 mb-2">本日チーフを担当するスタッフをチェックしてください。</p>';
             
             workingNurses.forEach(n => {
                 const isChief = n.role === 'chief';
                 const baseTDef = BASE_FOUR_TEAMS.find(t => t.id === (n.baseTeam || n.team)) || BASE_FOUR_TEAMS[0];
                 const teamBadge = (!n.baseTeam || n.baseTeam === 'none') 
-                    ? `<span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300 mr-1"></span>` 
-                    : `<span class="inline-block w-2.5 h-2.5 rounded-full ${baseTDef.bg} mr-1"></span>`;
+                    ? `<span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-300 mr-1 text-[8px] flex items-center justify-center font-black text-white">-</span>` 
+                    : `<span class="inline-block w-2.5 h-2.5 rounded-full ${baseTDef.bg} mr-1 text-[8px] flex items-center justify-center font-black text-white">${baseTDef.shape}</span>`;
 
                 listContainer.innerHTML += `
-                    <div class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition">
+                    <div class="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:bg-slate-50 transition">
                         <label class="flex items-center space-x-2 cursor-pointer flex-1">
                             <input type="checkbox" id="chk_chief_${n.id}" class="w-4 h-4 text-amber-500 rounded focus:ring-amber-500" ${isChief ? 'checked' : ''}>
-                            <span class="text-sm font-bold text-slate-800 flex items-center">${n.name} <span class="text-[10px] text-slate-500 font-normal ml-2 flex items-center bg-slate-100 px-1.5 py-0.5 rounded">${teamBadge}${baseTDef.label.split(' ')[0]}</span></span>
+                            <span class="text-xs font-bold text-slate-800 flex items-center">${n.name} <span class="text-[9px] text-slate-500 font-normal ml-2 flex items-center bg-slate-100 px-1 py-0.5 rounded">${teamBadge}${baseTDef.label.split(' ')[0]}</span></span>
                         </label>
                     </div>
                 `;
@@ -1832,6 +1867,7 @@
                 }
             });
             closeTeamRosterModal();
+            updatePersonalColors();
             showToast('本日のチーフを更新しました');
         }
 
@@ -1846,22 +1882,22 @@
             const tbody = document.getElementById('staffTableBody'); tbody.innerHTML = '';
             nurses.forEach((n, i) => {
                 if (!n.baseTeam) n.baseTeam = n.team || 'none';
-                // スタッフ設定での所属チームは4チーム（A, B, C, D）＋共用から選択
-                let teamSelect = `<select onchange="updateStaffBaseTeam(${i}, this.value)" class="border border-slate-300 rounded p-1 text-xs w-full font-bold">`;
-                BASE_FOUR_TEAMS.forEach(tc => { teamSelect += `<option value="${tc.id}" ${n.baseTeam === tc.id ? 'selected' : ''}>${tc.label}</option>`; });
+                
+                let teamSelect = `<select onchange="updateStaffBaseTeam(${i}, this.value)" class="border border-slate-300 rounded p-1 text-[11px] w-full font-bold">`;
+                BASE_FOUR_TEAMS.forEach(tc => { teamSelect += `<option value="${tc.id}" ${n.baseTeam === tc.id ? 'selected' : ''}>${tc.shape} ${tc.label}</option>`; });
                 teamSelect += `</select>`;
                 
-                let admitCheck = `<input type="checkbox" onchange="nurses[${i}].canAdmit=this.checked" ${n.canAdmit ? 'checked' : ''} class="w-4 h-4 text-teal-600 rounded">`;
-                let workingCheck = `<input type="checkbox" onchange="toggleStaffWorking(${i}, this.checked)" ${n.isWorking !== false ? 'checked' : ''} class="w-4 h-4 text-teal-600 rounded">`;
-                let capSelect = `<select onchange="nurses[${i}].capacity=this.value" class="border border-slate-300 rounded p-1 text-xs w-full"><option value="low" ${n.capacity === 'low' ? 'selected' : ''}>低め</option><option value="normal" ${n.capacity === 'normal' ? 'selected' : ''}>通常</option><option value="high" ${n.capacity === 'high' ? 'selected' : ''}>高め</option></select>`;
+                let admitCheck = `<input type="checkbox" onchange="nurses[${i}].canAdmit=this.checked" ${n.canAdmit ? 'checked' : ''} class="w-3.5 h-3.5 text-teal-600 rounded">`;
+                let workingCheck = `<input type="checkbox" onchange="toggleStaffWorking(${i}, this.checked)" ${n.isWorking !== false ? 'checked' : ''} class="w-3.5 h-3.5 text-teal-600 rounded">`;
+                let capSelect = `<select onchange="nurses[${i}].capacity=this.value" class="border border-slate-300 rounded p-1 text-[11px] w-full"><option value="low" ${n.capacity === 'low' ? 'selected' : ''}>低め</option><option value="normal" ${n.capacity === 'normal' ? 'selected' : ''}>通常</option><option value="high" ${n.capacity === 'high' ? 'selected' : ''}>高め</option></select>`;
                 
                 tbody.innerHTML += `<tr class="border-b bg-white hover:bg-slate-50">
-                    <td class="p-2"><input type="text" value="${n.name}" onchange="nurses[${i}].name=this.value" class="w-24 border border-slate-300 rounded px-1.5 py-1 font-bold text-xs"></td>
-                    <td class="p-2 text-center">${workingCheck}</td>
-                    <td class="p-2 w-36">${teamSelect}</td>
-                    <td class="p-2 text-center w-16">${admitCheck}</td>
-                    <td class="p-2 w-24">${capSelect}</td>
-                    <td class="p-2 text-right"><button onclick="requestDelStaff(${i})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
+                    <td class="p-1.5"><input type="text" value="${n.name}" onchange="nurses[${i}].name=this.value" class="w-20 border border-slate-300 rounded px-1.5 py-1 font-bold text-xs"></td>
+                    <td class="p-1.5 text-center">${workingCheck}</td>
+                    <td class="p-1.5 w-32">${teamSelect}</td>
+                    <td class="p-1.5 text-center w-14">${admitCheck}</td>
+                    <td class="p-1.5 w-20">${capSelect}</td>
+                    <td class="p-1.5 text-right"><button onclick="requestDelStaff(${i})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
         }
@@ -1871,6 +1907,7 @@
             if (nurses[idx].role !== 'chief' && teams.some(t => t.id === newTeamId)) {
                 nurses[idx].team = newTeamId;
             }
+            updatePersonalColors();
         }
 
         function addNewStaff() { 
@@ -1894,6 +1931,7 @@
                 patients.forEach(p => { if(p.nurseId === nId) p.nurseId = null; });
                 if(activePaintStaffId === nId) clearActivePaintStaff();
                 nurses.splice(idx, 1); 
+                updatePersonalColors();
                 renderStaffTable();
             });
         }
@@ -1902,7 +1940,7 @@
         function exportStaffCsv() {
             let csv = '\uFEFFID,氏名,チーム,役割(chief/leader/staff),入院対応(true/false),負荷(low/normal/high),出勤(true/false)\r\n';
             nurses.forEach(n => {
-                csv += `"${n.id}","${n.name}","${n.team}","${n.role}",${n.canAdmit},"${n.capacity}",${n.isWorking !== false}\r\n`;
+                csv += `"${n.id}","${n.name}","${n.baseTeam || 'none'}","${n.role}",${n.canAdmit},"${n.capacity}",${n.isWorking !== false}\r\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -1929,7 +1967,7 @@
                         if (cols.length >= 7) {
                             const id = cols[0] || ('N' + Date.now() + Math.floor(Math.random() * 1000));
                             const name = cols[1];
-                            const team = cols[2];
+                            const baseTeam = cols[2];
                             const role = cols[3];
                             const canAdmit = cols[4] === 'true';
                             const capacity = cols[5];
@@ -1938,13 +1976,16 @@
                             const existingNurse = nurses.find(n => n.id === id);
                             if (existingNurse) {
                                 existingNurse.name = name;
-                                existingNurse.team = team;
+                                existingNurse.baseTeam = baseTeam;
                                 existingNurse.role = role;
                                 existingNurse.canAdmit = canAdmit;
                                 existingNurse.capacity = capacity;
                                 existingNurse.isWorking = isWorking;
+                                if (role !== 'chief' && teams.some(t => t.id === baseTeam)) {
+                                    existingNurse.team = baseTeam;
+                                }
                             } else {
-                                nurses.push({ id, name, team, role, canAdmit, capacity, isWorking });
+                                nurses.push({ id, name, baseTeam, team: baseTeam, role, canAdmit, capacity, isWorking });
                             }
                             importedCount++;
                         }
@@ -1963,7 +2004,7 @@
 
         function exportData() {
             saveToLocalStorage();
-            const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, showChiefFrame, savedAt: new Date().toLocaleString('ja-JP') };
+            const dataObj = { teams, clinicalWorkloadItems, wardRooms, nurses, patients, allocationRules, isChiefSlotVisible, savedAt: new Date().toLocaleString('ja-JP') };
             const dataStr = JSON.stringify(dataObj, null, 2);
             const blob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -1994,14 +2035,6 @@
         }
 
         // === ALLOCATION ENGINE (WITH RULES) ===
-        function clearAllAllocations() {
-            showCustomConfirm("すべての患者の担当割り当てを解除しますか？", () => {
-                patients.forEach(p => p.nurseId = null);
-                renderAll();
-                showToast("すべての割り当てをクリアしました");
-            });
-        }
-
         function triggerAutoAllocation() {
             patients.forEach(p => p.nurseId = null); // Reset
             let allocatableNurses = nurses.filter(n => n.role !== 'chief' && n.isWorking !== false); // Exclude chief and off-duty from auto allocation
@@ -2041,7 +2074,7 @@
                     }
 
                     // Room definition
-                    const roomDef = wardRooms.find(r => r.roomNumber === p.room);
+                    const roomDef = wardRooms.find(r => r.roomNumber === p.room) || (p.room === '転入院枠' ? { roomNumber: '転入院枠', capacity: 3, team: 'none' } : null);
                     
                     // 2. Team Color Rule
                     if (roomDef && roomDef.team !== 'none' && roomDef.team !== n.team) {
