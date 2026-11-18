@@ -187,7 +187,7 @@
         <div id="listViewContainer" class="hidden w-full mx-auto bg-white border border-slate-300 rounded-xl shadow-md flex-col flex-1 overflow-hidden">
             <div class="bg-slate-50 border-b border-slate-200 px-3 py-2 flex justify-between items-center">
                 <span class="font-black text-xs text-slate-800"><i class="fa-solid fa-table-list text-teal-600 mr-1.5"></i>患者一覧・負荷一括編集</span>
-                <span class="text-[10px] text-slate-500">変更は自動的に保存・点数計算されます</span>
+                <span class="text-[10px] text-slate-500">（右上から反時計回りの順番で表示しています）変更は自動保存されます</span>
             </div>
             <div class="flex-1 overflow-auto">
                 <table class="w-full text-left text-xs whitespace-nowrap min-w-[900px]">
@@ -244,6 +244,7 @@
                 <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
                     <label class="block text-xs font-bold text-slate-800 mb-1">チームカラー優先度</label>
                     <select id="ruleTeamPriority" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold bg-slate-50 focus:outline-none focus:ring-2 focus:ring-fuchsia-400">
+                        <option value="strict">【不可】 チーム外への割り当てを禁止する</option>
                         <option value="high">【強】 チーム外への割り当てを極力防ぐ</option>
                         <option value="normal">【標準】 基本はチーム内だが、負荷超過時はチーム外も許容</option>
                     </select>
@@ -279,6 +280,10 @@
         <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[92vh]">
             <div class="bg-slate-900 text-white p-3 flex items-center justify-between">
                 <div class="flex items-center space-x-2">
+                    <div class="flex items-center space-x-1 mr-1">
+                        <button onclick="navigatePopover(-1)" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition" title="前の患者"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <button onclick="navigatePopover(1)" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition" title="次の患者"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                    </div>
                     <span id="popoverPatientRoomBadge" class="px-2 py-0.5 rounded-md bg-teal-500 font-black text-xs"></span>
                     <div>
                         <h3 id="popoverPatientName" class="font-extrabold text-sm"></h3>
@@ -511,7 +516,7 @@
                         <li><strong>患者の登録:</strong> 「空床」をタップすると、新しい患者を登録できます。</li>
                         <li><strong>担当の割り当て:</strong> 中央のスタッフアイコンをタップして「割当モード」にし、患者のベッドをタップすると担当に設定されます。</li>
                         <li><strong>患者の移動:</strong> 患者のベッドをドラッグ＆ドロップすると、別のベッドへ移動（または入れ替え）できます。</li>
-                        <li><strong>患者情報の編集:</strong> スタッフが選択されていない状態で患者をタップすると、負荷点数や担当の解除、予定ベッドの入力、患者の削除ができます。</li>
+                        <li><strong>患者情報の編集:</strong> スタッフが選択されていない状態で患者をタップすると、負荷点数や担当の解除、予定ベッドの入力、患者の削除ができます。<br>ポップオーバーのヘッダーにある「&lt;」「&gt;」ボタンで前後の患者へ移動できます。</li>
                     </ul>
                 </section>
 
@@ -682,7 +687,7 @@
             balancePriority: 'workload', // 'workload' or 'headcount'
             roomStrategy: 'neutral', // 'prevent' (部屋持ち制限), 'encourage' (部屋持ち推奨), 'neutral'
             maxPatientsPerRoom: 1, // 1部屋あたりの同一スタッフ最大受持人数
-            teamPriority: 'normal', // 'high' or 'normal'
+            teamPriority: 'normal', // 'strict', 'high', or 'normal'
             sharedRoomHandling: 'standard', // 'standard' or 'low_workload'
             protectLowCap: true // true or false
         };
@@ -918,6 +923,37 @@
                 }
             });
             return total;
+        }
+
+        // === COUNTER-CLOCKWISE SORTING ===
+        function getSortedPatients() {
+            // Right-to-Left for top rooms
+            const topRooms = wardRooms.filter(r => r.position === 'top').reverse();
+            // Top-to-Bottom for left rooms
+            const leftRooms = wardRooms.filter(r => r.position === 'left');
+            // Left-to-Right for bottom rooms
+            const bottomRooms = wardRooms.filter(r => r.position === 'bottom');
+            // Bottom-to-Top for right rooms
+            const rightRooms = wardRooms.filter(r => r.position === 'right').reverse();
+            
+            const counterClockwiseRooms = [...topRooms, ...leftRooms, ...bottomRooms, ...rightRooms].map(r => r.roomNumber);
+            
+            return [...patients].sort((a, b) => {
+                // Transfer/Admission always at the end
+                if (a.room === '転入院枠' && b.room !== '転入院枠') return 1;
+                if (a.room !== '転入院枠' && b.room === '転入院枠') return -1;
+                // If same room, sort by bed index
+                if (a.room === b.room) return a.bedIndex - b.bedIndex;
+                
+                const idxA = counterClockwiseRooms.indexOf(a.room);
+                const idxB = counterClockwiseRooms.indexOf(b.room);
+                
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+                
+                return a.room.localeCompare(b.room);
+            });
         }
 
         // === VIEW TOGGLE ===
@@ -1365,12 +1401,7 @@
             thead.innerHTML = headHtml;
             tbody.innerHTML = '';
 
-            let sortedPatients = [...patients].sort((a, b) => {
-                if (a.room === b.room) return a.bedIndex - b.bedIndex;
-                if (a.room === '転入院枠') return 1; // Put transfer at bottom
-                if (b.room === '転入院枠') return -1;
-                return a.room.localeCompare(b.room);
-            });
+            let sortedPatients = getSortedPatients();
 
             sortedPatients.forEach(p => {
                 const totalPts = calcPoints(p.state);
@@ -1488,8 +1519,27 @@
             renderPopoverOptions();
             document.getElementById('floatingPatientPopover').classList.remove('hidden');
         }
+
+        function navigatePopover(dir) {
+            if (activePopoverPatientId) {
+                saveFloatingPopoverSettings(false); 
+            }
+            const sorted = getSortedPatients();
+            if (sorted.length === 0) return;
+
+            const curIdx = sorted.findIndex(p => p.id === activePopoverPatientId);
+            let nextIdx = 0;
+            if (curIdx !== -1) {
+                nextIdx = curIdx + dir;
+                if (nextIdx < 0) nextIdx = sorted.length - 1;
+                if (nextIdx >= sorted.length) nextIdx = 0;
+            }
+            openFloatingPopover(sorted[nextIdx].id);
+        }
+
         function closeFloatingPopover() { document.getElementById('floatingPatientPopover').classList.add('hidden'); activePopoverPatientId = null; }
-        function saveFloatingPopoverSettings() {
+        
+        function saveFloatingPopoverSettings(closeModal = true) {
             const p = patients.find(p => p.id === activePopoverPatientId);
             if (p) { 
                 p.state = JSON.parse(JSON.stringify(tempState)); 
@@ -1497,10 +1547,13 @@
                     p.plannedBed = document.getElementById('popoverPlannedBedInput').value;
                 }
                 renderAll(); 
-                showToast('負荷設定を保存しました'); 
             }
-            closeFloatingPopover();
+            if (closeModal) {
+                closeFloatingPopover();
+                showToast('負荷設定を保存しました');
+            }
         }
+
         function unassignCurrentPopoverPatient() {
             const p = patients.find(p => p.id === activePopoverPatientId);
             if (p) { p.nurseId = null; renderAll(); showToast('受持を解除しました'); }
@@ -2060,7 +2113,7 @@
                 let candidates = allocatableNurses.filter(n => needsAdmission ? n.canAdmit : true);
                 if (candidates.length === 0) candidates = allocatableNurses;
 
-                let best = candidates[0].id;
+                let best = null;
                 let minScore = Infinity;
 
                 candidates.forEach(n => {
@@ -2078,6 +2131,7 @@
                     
                     // 2. Team Color Rule
                     if (roomDef && roomDef.team !== 'none' && roomDef.team !== n.team) {
+                        if (allocationRules.teamPriority === 'strict') return; // strictly skip
                         score += allocationRules.teamPriority === 'high' ? 5000 : 300;
                     }
 
@@ -2116,10 +2170,12 @@
                     if (score < minScore) { minScore = score; best = n.id; }
                 });
 
-                p.nurseId = best;
-                nWork[best] += calcPoints(p.state);
-                nHeadcount[best]++;
-                nRoomCount[best][p.room] = (nRoomCount[best][p.room] || 0) + 1;
+                if (best !== null) {
+                    p.nurseId = best;
+                    nWork[best] += calcPoints(p.state);
+                    nHeadcount[best]++;
+                    nRoomCount[best][p.room] = (nRoomCount[best][p.room] || 0) + 1;
+                }
             });
             renderAll();
             showToast("自動配分を完了しました（設定したルールに基づき最適化しました）");
