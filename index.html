@@ -47,7 +47,7 @@
                 <i class="fa-solid fa-hospital"></i>
             </div>
             <div>
-                <h1 class="text-sm sm:text-base font-black text-slate-900 tracking-tight">受持配分マップ Ver.1</h1>
+                <h1 class="text-sm sm:text-base font-black text-slate-900 tracking-tight">受持配分マップ　Ver.1</h1>
                 <p class="text-[9px] text-slate-500">外周病室 × 中央ステーション構成</p>
             </div>
         </div>
@@ -394,7 +394,7 @@
             </div>
             <div class="p-2.5 border-t bg-white flex items-center justify-between">
                 <button id="btnDeleteActiveTeam" onclick="deleteActiveTeamFromModal()" class="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-[10px] rounded-lg transition flex items-center">
-                    <i class="fa-solid fa-trash-can mr-1"></i>この枠を削除
+                    <i class="fa-solid fa-trash-can mr-1"></i>このチームを削除
                 </button>
                 <div class="flex space-x-1.5 ml-auto">
                     <button onclick="closeTeamRosterModal()" class="px-3 py-1.5 text-slate-500 font-bold text-xs">キャンセル</button>
@@ -455,7 +455,7 @@
     <div id="customDialogModal" class="fixed inset-0 bg-black/60 modal-blur z-[9999] hidden flex items-center justify-center p-3">
         <div class="bg-white rounded-2xl w-full max-w-xs shadow-2xl overflow-hidden flex flex-col scale-100 transform transition-all">
             <div id="customDialogHeader" class="bg-slate-900 text-white p-2.5 font-bold text-xs">お知らせ</div>
-            <div id="customDialogMessage" class="p-4 text-xs text-slate-700 leading-relaxed font-medium"></div>
+            <div id="customDialogMessage" class="p-4 text-xs text-slate-700 leading-relaxed font-medium whitespace-pre-line"></div>
             <div id="customDialogInputContainer" class="px-4 pb-3 hidden">
                 <input type="text" id="customDialogInput" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-xs focus:ring focus:ring-teal-500 outline-none">
             </div>
@@ -523,8 +523,9 @@
                 <section>
                     <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-1.5"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>自動配分とルール設定</h4>
                     <ul class="list-disc list-inside space-y-1 ml-1 text-[11px] sm:text-xs">
-                        <li>右上の「自動配分」ボタンを押すと、現在の患者の負荷点数や基本ルールに基づいて、アルゴリズムが自動的に担当を割り当てます。</li>
-                        <li>「設定」＞「配分ルール設定」から、負荷優先か人数優先か、部屋持ちの制限などのルールを変更できます。</li>
+                        <li>右上の「自動配分」ボタンを押すと、本日のチームに設定されたスタッフ（およびチーフ）に対して、負荷点数や基本ルールに基づき自動的に担当を割り当てます。</li>
+                        <li>チーフに設定されたスタッフは、チームを問わず軽めの負担で受け持つように自動調整されます。</li>
+                        <li>「設定」＞「配分ルール設定」から、負荷優先か人数優先か、チーム外割当の禁止、部屋持ちの制限などのルールを変更できます。</li>
                     </ul>
                 </section>
 
@@ -532,7 +533,7 @@
                     <h4 class="font-bold text-slate-900 border-b border-slate-300 pb-1 mb-1.5"><i class="fa-solid fa-users-gear text-blue-600 mr-1.5"></i>チームとスタッフの管理</h4>
                     <ul class="list-disc list-inside space-y-1 ml-1 text-[11px] sm:text-xs">
                         <li><strong>本日のメンバー:</strong> マップ中央の各チーム名（「Aチーム」など）や「チーフ」をタップすると、その日出勤しているメンバーを変更できます。</li>
-                        <li><strong>枠の追加:</strong> 中央ステーション右上の「チーム追加」ボタンや左上の「チーフ追加」から、その日の稼働枠を増やすことができます。</li>
+                        <li><strong>枠の追加・削除:</strong> 中央ステーション右上の「＋チーム」ボタンや各枠の「×」ボタンから、その日の稼働チーム・チーフ枠を増減できます。</li>
                         <li><strong>スタッフ情報:</strong> 「設定」＞「スタッフ設定」から、スタッフの追加・削除やベースとなる所属チーム等を管理できます。チームごとにアイコン図形が自動割り当てられます。</li>
                     </ul>
                 </section>
@@ -587,7 +588,6 @@
 
         function showCustomAlert(msg) {
             document.getElementById('customDialogModal').classList.remove('hidden');
-            document.getElementById('customDialogHeader').textContent = 'お知らせ';
             document.getElementById('customDialogHeader').className = 'bg-teal-600 text-white p-2.5 font-bold text-xs flex items-center';
             document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-circle-info mr-1.5"></i>お知らせ';
             document.getElementById('customDialogMessage').textContent = msg;
@@ -598,7 +598,6 @@
 
         function showCustomConfirm(msg, callback) {
             document.getElementById('customDialogModal').classList.remove('hidden');
-            document.getElementById('customDialogHeader').textContent = '確認';
             document.getElementById('customDialogHeader').className = 'bg-rose-600 text-white p-2.5 font-bold text-xs flex items-center';
             document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1.5"></i>確認';
             document.getElementById('customDialogMessage').textContent = msg;
@@ -607,13 +606,12 @@
             const btns = document.getElementById('customDialogButtons');
             btns.innerHTML = `
                 <button onclick="closeCustomDialog()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold rounded-xl transition">キャンセル</button>
-                <button onclick="closeCustomDialog(); customDialogCallback();" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition">実行する</button>
+                <button onclick="closeCustomDialog(); if (customDialogCallback) customDialogCallback();" class="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition">実行する</button>
             `;
         }
 
         function showCustomPrompt(msg, defaultVal, callback) {
             document.getElementById('customDialogModal').classList.remove('hidden');
-            document.getElementById('customDialogHeader').textContent = '入力';
             document.getElementById('customDialogHeader').className = 'bg-indigo-600 text-white p-2.5 font-bold text-xs flex items-center';
             document.getElementById('customDialogHeader').innerHTML = '<i class="fa-solid fa-pen-to-square mr-1.5"></i>入力';
             document.getElementById('customDialogMessage').textContent = msg;
@@ -624,7 +622,7 @@
             const btns = document.getElementById('customDialogButtons');
             btns.innerHTML = `
                 <button onclick="closeCustomDialog()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-[11px] font-bold rounded-xl transition">キャンセル</button>
-                <button onclick="closeCustomDialog(); customDialogCallback(document.getElementById('customDialogInput').value);" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition">決定</button>
+                <button onclick="closeCustomDialog(); if (customDialogCallback) customDialogCallback(document.getElementById('customDialogInput').value);" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold rounded-xl shadow-sm transition">決定</button>
             `;
         }
 
@@ -643,9 +641,12 @@
         const BASE_FOUR_TEAMS = [
             { id: 'none', label: '共用(カラー無)', bg: 'bg-slate-200', text: 'text-slate-800', border: 'border-slate-300', light: 'bg-slate-50', dot: 'bg-slate-400', iconColor: 'text-slate-500', shape: '-' },
             { id: 'blue', label: 'Aチーム (青)', bg: 'bg-blue-600', text: 'text-white', border: 'border-blue-600', light: 'bg-blue-50', dot: 'bg-blue-600', iconColor: 'text-blue-600', shape: '●' },
-            { id: 'green', label: 'Bチーム (緑)', bg: 'bg-emerald-600', text: 'text-white', border: 'border-emerald-600', light: 'bg-emerald-50', dot: 'bg-emerald-600', iconColor: 'text-emerald-600', shape: '▲' }
+            { id: 'green', label: 'Bチーム (緑)', bg: 'bg-emerald-600', text: 'text-white', border: 'border-emerald-600', light: 'bg-emerald-50', dot: 'bg-emerald-600', iconColor: 'text-emerald-600', shape: '▲' },
+            { id: 'rose', label: 'Cチーム (赤)', bg: 'bg-rose-600', text: 'text-white', border: 'border-rose-600', light: 'bg-rose-50', dot: 'bg-rose-600', iconColor: 'text-rose-600', shape: '■' },
+            { id: 'amber', label: 'Dチーム (黄)', bg: 'bg-amber-500', text: 'text-amber-950', border: 'border-amber-500', light: 'bg-amber-50', dot: 'bg-amber-500', iconColor: 'text-amber-500', shape: '★' }
         ];
 
+        // 本日マップに表示する稼働チーム一覧（初期はA・Bチーム）
         let teams = [
             BASE_FOUR_TEAMS[0], // none
             BASE_FOUR_TEAMS[1], // blue (A)
@@ -692,7 +693,7 @@
             protectLowCap: true // true or false
         };
 
-        // Note: 転入院枠 is no longer in wardRooms. It is rendered separately.
+        // 転入院枠は病室設定から除外し、中央ステーション右上に固定表示
         let wardRooms = [
             { roomNumber: '205-2', position: 'top', capacity: 4, team: 'blue' },
             { roomNumber: '205-1', position: 'top', capacity: 4, team: 'blue' },
@@ -716,7 +717,6 @@
             { id: 'N6', name: '受持F', baseTeam: 'amber', team: 'green', role: 'staff', canAdmit: true, capacity: 'high', personalColor: 'teal', isWorking: true }
         ];
 
-        // Including patients for Transfer/Admission (room: '転入院枠')
         let patients = [
             { id: 'P1', room: '205-2', bedIndex: 0, name: '山田 太郎', state: { iv: '通常', careLevel: '低い' }, nurseId: null, plannedBed: '' },
             { id: 'P2', room: '205-2', bedIndex: 1, name: '佐藤 健二', state: { surgery: '術前日' }, nurseId: null, plannedBed: '' },
@@ -726,9 +726,7 @@
             { id: 'P_trans_1', room: '転入院枠', bedIndex: 0, name: '新規入院 1', state: { admission: '入院あり', careLevel: '高い' }, nurseId: null, plannedBed: '201-1' }
         ];
 
-        // Ensure Chief slot is visible initially.
         let isChiefSlotVisible = true;
-
         let activePaintStaffId = null;
         let activePopoverPatientId = null;
         let tempState = {};
@@ -851,7 +849,6 @@
                 }
             }
 
-            // Fallback: Check LocalStorage backup or prompt user to pick local JSON
             try {
                 const savedStr = localStorage.getItem(LOCAL_STORAGE_KEY);
                 if (savedStr) {
@@ -863,7 +860,6 @@
                 }
             } catch (e) {}
 
-            // If neither fetch nor LocalStorage succeeded, offer startup dialog to load JSON file
             showStartupLoadDialog({ type: 'prompt_only' });
         }
 
@@ -888,7 +884,7 @@
             document.getElementById('ruleMaxPatientsPerRoom').value = allocationRules.maxPatientsPerRoom || 1;
             document.getElementById('ruleTeamPriority').value = allocationRules.teamPriority || 'normal';
             document.getElementById('ruleSharedRoom').value = allocationRules.sharedRoomHandling || 'standard';
-            document.getElementById('ruleProtectLowCap').checked = allocationRules.protectLowCap !== false; // default true
+            document.getElementById('ruleProtectLowCap').checked = allocationRules.protectLowCap !== false;
             
             toggleMaxPatientsPerRoomContainer();
             document.getElementById('rulesSettingsModal').classList.remove('hidden');
@@ -927,22 +923,17 @@
 
         // === COUNTER-CLOCKWISE SORTING ===
         function getSortedPatients() {
-            // Right-to-Left for top rooms
+            // 右上から反時計回り: 上段(右→左) → 左段(上→下) → 下段(左→右) → 右段(下→上)
             const topRooms = wardRooms.filter(r => r.position === 'top').reverse();
-            // Top-to-Bottom for left rooms
             const leftRooms = wardRooms.filter(r => r.position === 'left');
-            // Left-to-Right for bottom rooms
             const bottomRooms = wardRooms.filter(r => r.position === 'bottom');
-            // Bottom-to-Top for right rooms
             const rightRooms = wardRooms.filter(r => r.position === 'right').reverse();
             
             const counterClockwiseRooms = [...topRooms, ...leftRooms, ...bottomRooms, ...rightRooms].map(r => r.roomNumber);
             
             return [...patients].sort((a, b) => {
-                // Transfer/Admission always at the end
                 if (a.room === '転入院枠' && b.room !== '転入院枠') return 1;
                 if (a.room !== '転入院枠' && b.room === '転入院枠') return -1;
-                // If same room, sort by bed index
                 if (a.room === b.room) return a.bedIndex - b.bedIndex;
                 
                 const idxA = counterClockwiseRooms.indexOf(a.room);
@@ -1111,7 +1102,7 @@
             const teamSelect = document.getElementById('editRoomTeam');
             teamSelect.innerHTML = '';
             BASE_FOUR_TEAMS.forEach(tc => {
-                teamSelect.innerHTML += `<option value="${tc.id}" ${room.team === tc.id ? 'selected' : ''}>${tc.label}</option>`;
+                teamSelect.innerHTML += `<option value="${tc.id}" ${room.team === tc.id ? 'selected' : ''}>${tc.shape} ${tc.label}</option>`;
             });
 
             document.getElementById('roomEditModal').classList.remove('hidden');
@@ -1137,7 +1128,7 @@
                 return;
             }
 
-            if (newName !== oldName && wardRooms.some(r => r.roomNumber === newName) || newName === '転入院枠') {
+            if ((newName !== oldName && wardRooms.some(r => r.roomNumber === newName)) || newName === '転入院枠') {
                 showCustomAlert("すでに存在する部屋番号か、予約された名称です。");
                 return;
             }
@@ -1307,7 +1298,7 @@
             if (isChiefSlotVisible) {
                 const chiefs = workingNurses.filter(n => n.role === 'chief');
                 let chiefHtml = `<div class="flex flex-col items-center bg-white p-3 pt-4 rounded-2xl border border-slate-200 shadow-sm relative w-max mt-3">
-                    <div class="absolute top-1 right-2 text-rose-300 hover:text-rose-500 cursor-pointer text-xs" onclick="deleteChiefSlotFromModal()"><i class="fa-solid fa-xmark"></i></div>
+                    <div class="absolute top-1 right-2 text-rose-300 hover:text-rose-500 cursor-pointer text-xs" onclick="deleteChiefSlotFromModal()" title="チーフ枠を非表示"><i class="fa-solid fa-xmark"></i></div>
                     <div onclick="openChiefRosterModal()" class="text-[11px] font-black text-slate-800 bg-slate-200 hover:bg-slate-300 px-4 py-1 rounded-full shadow-sm mb-2 cursor-pointer transition active:scale-95 flex items-center absolute -top-3">
                         <i class="fa-solid fa-crown text-amber-500 mr-1.5"></i>チーフ <i class="fa-solid fa-pen text-[9px] ml-1.5 opacity-70"></i>
                     </div>
@@ -1334,7 +1325,7 @@
                 const teamId = tDef.id;
                 const teamNurses = others.filter(n => n.team === teamId);
 
-                teamNurses.sort((a, b) => { // Leader first
+                teamNurses.sort((a, b) => {
                     if (a.role === 'leader' && b.role !== 'leader') return -1;
                     if (a.role !== 'leader' && b.role === 'leader') return 1;
                     return 0;
@@ -1346,6 +1337,7 @@
 
                 let colHtml = `
                     <div class="flex flex-col items-center bg-white p-3 pt-5 rounded-2xl border border-slate-200 shadow-sm w-full relative max-w-2xl mt-1">
+                        <div class="absolute top-1.5 right-2.5 text-rose-300 hover:text-rose-500 cursor-pointer text-xs transition" onclick="deleteTeamById('${tDef.id}')" title="このチームを削除"><i class="fa-solid fa-xmark"></i></div>
                         ${teamTitle}
                         <div class="flex flex-row justify-center items-start flex-wrap gap-2 w-full">
                 `;
@@ -1369,7 +1361,6 @@
         function deleteChiefSlotFromModal() {
             isChiefSlotVisible = false;
             
-            // Remove anyone currently acting as chief back to staff
             const workingNurses = nurses.filter(n => n.isWorking !== false);
             workingNurses.forEach(n => {
                 if (n.role === 'chief') {
@@ -1406,12 +1397,6 @@
             sortedPatients.forEach(p => {
                 const totalPts = calcPoints(p.state);
                 const ptClass = totalPts >= 8 ? 'text-rose-600' : (totalPts >= 4 ? 'text-amber-600' : 'text-emerald-600');
-                
-                const nurse = nurses.find(n => n.id === p.nurseId);
-                const pDef = nurse ? (PERSONAL_COLORS.find(c => c.id === nurse.personalColor) || PERSONAL_COLORS[0]) : null;
-                const displayTeamId = nurse ? ((nurse.role === 'chief' && nurse.baseTeam && nurse.baseTeam !== 'none') ? nurse.baseTeam : nurse.team) : null;
-                const tDef = nurse ? (teams.find(t=>t.id===displayTeamId)||BASE_FOUR_TEAMS.find(t=>t.id===displayTeamId)||BASE_FOUR_TEAMS[0]) : null;
-                const nBadge = nurse ? `<span class="${pDef.bg} ${pDef.text} text-[10px] px-1.5 py-0.5 rounded font-bold shadow-sm flex items-center justify-center space-x-1"><span>${tDef.shape}</span><span>${nurse.name}</span></span>` : `<span class="text-[10px] text-rose-500 font-bold">未</span>`;
 
                 let nurseSelectHtml = `<select onchange="updatePatientNurseFromList('${p.id}', this.value)" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs font-bold bg-white focus:outline-none focus:ring-1 focus:ring-teal-500">`;
                 nurseSelectHtml += `<option value="">(未割当)</option>`;
@@ -1433,7 +1418,7 @@
                     const currentVal = p.state[item.id] || 'なし';
                     let selectHtml = `<select onchange="updatePatientStateFromList('${p.id}', '${item.id}', this.value)" class="w-full border border-slate-300 rounded px-1 py-1 text-[11px] bg-white focus:ring focus:ring-teal-200 outline-none">`;
                     let hasCurrentVal = item.options.some(o => o.label === currentVal);
-                    if(!hasCurrentVal) selectHtml += `<option value="${currentVal}" selected>${currentVal} (?pt)</option>`; // fallback
+                    if(!hasCurrentVal) selectHtml += `<option value="${currentVal}" selected>${currentVal} (?pt)</option>`;
                     item.options.forEach(opt => { selectHtml += `<option value="${opt.label}" ${currentVal === opt.label ? 'selected' : ''}>${opt.label} (+${opt.points})</option>`; });
                     selectHtml += `</select>`;
                     rowHtml += `<td class="p-1.5">${selectHtml}</td>`;
@@ -1755,25 +1740,30 @@
             showToast('本日のチーム枠を追加しました');
         }
 
-        function deleteActiveTeamFromModal() {
-            if (!activeEditTeamId || activeEditTeamId === 'none') return;
+        function deleteTeamById(teamId) {
+            if (!teamId || teamId === 'none') return;
             const activeTeamsCount = teams.filter(t => t.id !== 'none').length;
             if (activeTeamsCount <= 1) {
                 showCustomAlert('最低1つのチームが必要です。');
                 return;
             }
-            const targetTeam = teams.find(t => t.id === activeEditTeamId);
+            const targetTeam = teams.find(t => t.id === teamId);
             showCustomConfirm(`本日のマップから「${targetTeam ? targetTeam.label : 'このチーム'}」を削除しますか？\n（割り当てられていたメンバーは未所属に戻ります）`, () => {
-                teams = teams.filter(t => t.id !== activeEditTeamId);
+                teams = teams.filter(t => t.id !== teamId);
                 nurses.forEach(n => {
-                    if (n.team === activeEditTeamId) {
+                    if (n.team === teamId) {
                         n.team = 'none';
                         if (n.role === 'leader') n.role = 'staff';
                     }
                 });
                 closeTeamRosterModal();
+                renderAll();
                 showToast('チームを本日のマップから削除しました');
             });
+        }
+
+        function deleteActiveTeamFromModal() {
+            deleteTeamById(activeEditTeamId);
         }
         
         function updatePersonalColors() {
@@ -1796,7 +1786,11 @@
             document.getElementById('teamRosterModalTitle').innerHTML = `<div class="flex items-center space-x-1.5"><div class="flex items-center justify-center w-5 h-5 rounded-full border border-white/60 shadow-sm ${tDef.bg} text-[10px] text-white font-black">${tDef.shape}</div><span>${tDef.label.split(' ')[0]} メンバー</span></div>`;
             
             const delBtn = document.getElementById('btnDeleteActiveTeam');
-            if (delBtn) delBtn.classList.remove('hidden');
+            if (delBtn) {
+                delBtn.classList.remove('hidden');
+                delBtn.onclick = deleteActiveTeamFromModal;
+                delBtn.innerHTML = '<i class="fa-solid fa-trash-can mr-1"></i>このチームを削除';
+            }
 
             const eligibleNurses = nurses.filter(n => n.role !== 'chief' && n.isWorking !== false);
             const listContainer = document.getElementById('teamRosterList');
@@ -1873,7 +1867,7 @@
             const delBtn = document.getElementById('btnDeleteActiveTeam');
             if (delBtn) {
                 delBtn.classList.remove('hidden');
-                delBtn.onclick = deleteChiefSlotFromModal; // Re-use delete button for chief
+                delBtn.onclick = deleteChiefSlotFromModal;
                 delBtn.innerHTML = '<i class="fa-solid fa-trash-can mr-1"></i>チーフ枠を非表示';
             }
 
@@ -2090,8 +2084,20 @@
         // === ALLOCATION ENGINE (WITH RULES) ===
         function triggerAutoAllocation() {
             patients.forEach(p => p.nurseId = null); // Reset
-            let allocatableNurses = nurses.filter(n => n.role !== 'chief' && n.isWorking !== false); // Exclude chief and off-duty from auto allocation
-            if(allocatableNurses.length === 0) allocatableNurses = nurses.filter(n => n.isWorking !== false);
+
+            // 本日マップに設定されている稼働チームに所属するスタッフ、および表示中のチーフのみを配分対象とする
+            const activeTeamIds = teams.filter(t => t.id !== 'none').map(t => t.id);
+            let allocatableNurses = nurses.filter(n => {
+                if (n.isWorking === false) return false;
+                if (n.role === 'chief') return isChiefSlotVisible;
+                return activeTeamIds.includes(n.team);
+            });
+
+            if (allocatableNurses.length === 0) {
+                renderAll();
+                showCustomAlert('本日のチームまたはチーフにスタッフが設定されていません。中央ステーションからメンバーを選択してください。');
+                return;
+            }
             
             let nWork = {}; 
             let nHeadcount = {};
@@ -2117,6 +2123,7 @@
                 let minScore = Infinity;
 
                 candidates.forEach(n => {
+                    const isChief = n.role === 'chief';
                     let score = 0;
 
                     // 1. Balance Priority Rule
@@ -2126,11 +2133,16 @@
                         score += (nWork[n.id] * 100) + nHeadcount[n.id];
                     }
 
+                    // チーフは通常スタッフより優先度を下げて軽めに受け持つためのベース調整
+                    if (isChief) {
+                        score += 80;
+                    }
+
                     // Room definition
                     const roomDef = wardRooms.find(r => r.roomNumber === p.room) || (p.room === '転入院枠' ? { roomNumber: '転入院枠', capacity: 3, team: 'none' } : null);
                     
-                    // 2. Team Color Rule
-                    if (roomDef && roomDef.team !== 'none' && roomDef.team !== n.team) {
+                    // 2. Team Color Rule (チーフはチーム問わず受け持ち可能)
+                    if (!isChief && roomDef && roomDef.team !== 'none' && roomDef.team !== n.team) {
                         if (allocationRules.teamPriority === 'strict') return; // strictly skip
                         score += allocationRules.teamPriority === 'high' ? 5000 : 300;
                     }
@@ -2138,7 +2150,7 @@
                     // 3. Shared Room Handling Rule
                     if (roomDef && roomDef.team === 'none') {
                         if (allocationRules.sharedRoomHandling === 'low_workload') {
-                            score += nWork[n.id] * 20; // amplify penalty to heavily favor low workload staff
+                            score += nWork[n.id] * 20;
                         }
                     }
 
@@ -2148,23 +2160,26 @@
                         let maxAllowed = allocationRules.maxPatientsPerRoom || 1;
                         if (allocationRules.roomStrategy === 'prevent') {
                             if (currentCountInRoom >= maxAllowed) {
-                                score += 3000; // Strong penalty when exceeding max allowed patients per room
+                                score += 3000;
                             }
                         } else if (allocationRules.roomStrategy === 'encourage') {
                             if (currentCountInRoom >= 1) {
-                                score -= 50; // Reward for taking patients in the same room
+                                score -= 50;
                             }
                         }
                     }
 
-                    // 5. Low Capacity Protection Rule
+                    // 5. Low Capacity Protection Rule & Chief Light Load Protection
                     let pAcuity = calcPoints(p.state);
                     if (allocationRules.protectLowCap && n.capacity === 'low' && pAcuity >= 6) {
                         score += 3000;
                     }
+                    if (isChief && pAcuity >= 6) {
+                        score += 2000; // チーフは高負荷（6pt以上）の患者を避け、軽めの患者を優先
+                    }
 
-                    // Capacity general multiplier
-                    let capMultiplier = n.capacity === 'high' ? 0.8 : (n.capacity === 'low' ? 1.3 : 1.0);
+                    // Capacity general multiplier (チーフは負荷係数を高くして通常スタッフより軽めに配分)
+                    let capMultiplier = isChief ? 2.0 : (n.capacity === 'high' ? 0.8 : (n.capacity === 'low' ? 1.3 : 1.0));
                     score = score * capMultiplier;
 
                     if (score < minScore) { minScore = score; best = n.id; }
